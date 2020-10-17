@@ -2,11 +2,11 @@ package com.alaindroid.coloniser.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.alaindroid.coloniser.Coloniser;
+import com.alaindroid.coloniser.ColoniserGame;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new Coloniser(), config);
+		new LwjglApplication(new ColoniserGame(), config);
 	}
 }
