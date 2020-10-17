@@ -1,22 +1,17 @@
 package com.alaindroid.coloniser.state;
 
 import com.alaindroid.coloniser.draw.HexGridDrawer;
-import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
-import com.alaindroid.coloniser.grid.GridImpl;
-import com.alaindroid.coloniser.grid.hex.HexCell;
+import com.alaindroid.coloniser.service.CellGeneratorService;
 import com.alaindroid.coloniser.service.GridGeneratorService;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import lombok.RequiredArgsConstructor;
 
-import javax.inject.Inject;
-import java.util.Set;
-
-public class MainGameState implements GameState{
-    @Inject
-    HexGridDrawer hexGridDrawer;
-
-    @Inject
-    GridGeneratorService gridGeneratorService;
+@RequiredArgsConstructor
+public class MainGameState implements GameState {
+    final HexGridDrawer hexGridDrawer;
+    final GridGeneratorService gridGeneratorService;
+    final CellGeneratorService cellGeneratorService;
 
     ShapeRenderer shapeRenderer;
     Grid grid;
@@ -24,16 +19,12 @@ public class MainGameState implements GameState{
     @Override
     public void onCreate() {
         shapeRenderer = new ShapeRenderer();
-        grid = new GridImpl(false);
-        Coordinate origin = new Coordinate(new int[] {0, 0, 0});
-        Set<Coordinate> coordinates = gridGeneratorService.generateNeighbors(origin);
-        grid.cell(origin, new HexCell());
-        coordinates.forEach(coordinate -> grid.cell(origin, new HexCell()));
+        grid = gridGeneratorService.generateGrid(4, cellGeneratorService);
     }
 
     @Override
     public void onRender(float deltaTime) {
-        hexGridDrawer.draw(shapeRenderer, 0, 0, 40, 400, grid,10);
+        hexGridDrawer.draw(shapeRenderer, 100, 50, 400, 400, grid,20);
     }
 
     @Override

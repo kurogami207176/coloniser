@@ -1,61 +1,50 @@
 package com.alaindroid.coloniser.service;
 
-import com.alaindroid.coloniser.grid.Cell;
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
-import com.alaindroid.coloniser.grid.GridImpl;
-import dagger.Module;
 import lombok.SneakyThrows;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Module
 public class GridGeneratorService {
     @SneakyThrows
-    public static Grid generateGrid(Class<? extends Cell> clzCell,
-                                    int dimCount,
-                                    boolean positiveCoordsOnly,
-                                    int... dimensions) {
-        Coordinate curr = new Coordinate(dimCount);
-        int[] dimsSoFar = new int[dimCount];
-        for (int i = 0; i < dimCount; i++) {
-            dimsSoFar[i] = 1;
-        }
+    public Grid generateGrid(int size, CellGeneratorService cellGeneratorService) {
+        Coordinate curr = new Coordinate(0,0,0);
 
-        Grid grid = new GridImpl(positiveCoordsOnly);
-        for (int d = 0; d < dimCount; d++) {
-            if (dimsSoFar[d] < dimensions[d]) {
-                Coordinate newCoor = new Coordinate(dimCount);
-            }
+        Grid grid = new Grid();
+        Set<Coordinate> coordinates = new HashSet<>();
+        coordinates.add(curr);
+        for(int i =0 ; i < size; i++) {
+            coordinates.addAll(grow(coordinates));
         }
+        coordinates.forEach(c -> grid.cell(c, cellGeneratorService.generate(c)));
         return grid;
     }
 
-    private Set<Coordinate> enforcePositiveCoordsFlag(boolean positiveCoordsOnly, Set<Coordinate> coordinates) {
-        if (!positiveCoordsOnly) {
-            return coordinates;
-        }
-        return coordinates.stream().filter(Coordinate::positiveCoordsOnly).collect(Collectors.toSet());
+    private Set<Coordinate> grow(Set<Coordinate> coordinates) {
+        return coordinates.stream().map(this::generateNeighbors)
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
     }
 
     public Set<Coordinate> generateNeighbors(Coordinate origin) {
-        int[] numerical = origin.numerical();
+        System.out.println("generateNeighbors: " + origin);
         Set<Coordinate> coordinates = new HashSet<>();
-        for (int i = 0; i < numerical.length; i++) {
-            coordinates.add(
-                    generateCoordinate(i, numerical)
-            );
-        }
+        coordinates.add(coordOffset(origin, 1, 0, -1));
+        coordinates.add(coordOffset(origin, 1, -1, 0));
+        coordinates.add(coordOffset(origin, 0, 1, -1));
+        coordinates.add(coordOffset(origin, -1, 1, 0));
+        coordinates.add(coordOffset(origin, 0, -1, 1));
+        coordinates.add(coordOffset(origin, -1, 0, 1));
         return coordinates;
     }
 
-    private Coordinate generateCoordinate(int dimension, final int[] numerical) {
-        int[] newNumerical = new int[numerical.length];
-        System.arraycopy(numerical, 0, newNumerical, 0, numerical.length);
-        newNumerical[dimension] += 1;
-        return new Coordinate(newNumerical);
+    private Coordinate coordOffset(Coordinate origin, int r, int g, int b) {
+        return new Coordinate(origin.r() + r,
+                origin.g() + g,
+                origin.b() + b);
     }
 
 }
