@@ -1,4 +1,4 @@
-package com.alaindroid.coloniser.service;
+package com.alaindroid.coloniser.service.grid;
 
 public class HexExpandService {
 //    public void expand(HexCell hexCell, int expandByCount) {

@@ -6,7 +6,8 @@ import dagger.Component;
 import javax.inject.Singleton;
 
 @Singleton
-@Component(modules = { GeneratorModule.class, StateModule.class, DrawModule.class })
+@Component(modules = { GeneratorModule.class, StateModule.class, DrawModule.class,
+        ServiceModule.class})
 public interface MainComponent {
     void inject(ColoniserGame mainGame);
 }

@@ -1,4 +1,4 @@
-package com.alaindroid.coloniser.grid;
+package com.alaindroid.coloniser.draw;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +7,6 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(fluent = true)
 @AllArgsConstructor
-public class Coordinate {
-    private int r, g, b;
+public class Point2D {
+    private float x, y;
 }

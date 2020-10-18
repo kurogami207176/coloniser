@@ -1,7 +1,8 @@
-package com.alaindroid.coloniser.service;
+package com.alaindroid.coloniser.service.generator;
 
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
+import com.alaindroid.coloniser.service.grid.CellGeneratorService;
 import lombok.SneakyThrows;
 
 import java.util.HashSet;
@@ -32,7 +33,12 @@ public class GridGeneratorService {
 
     private void gridNeighbors(Grid grid) {
         grid.cells().keySet().stream()
-                .forEach( coordinate -> grid.neighbors(coordinate, generateNeighbors(coordinate)) );
+                .forEach( coordinate -> {
+                    Set<Coordinate> coordinates = generateNeighbors(coordinate).stream()
+                            .filter(grid.cells().keySet()::contains)
+                            .collect(Collectors.toSet());
+                    grid.neighbors(coordinate, coordinates);
+                } );
     }
 
     public Set<Coordinate> generateNeighbors(Coordinate origin) {

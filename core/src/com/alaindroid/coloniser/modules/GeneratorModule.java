@@ -1,7 +1,8 @@
 package com.alaindroid.coloniser.modules;
 
-import com.alaindroid.coloniser.service.CellGeneratorService;
-import com.alaindroid.coloniser.service.GridGeneratorService;
+import com.alaindroid.coloniser.service.generator.GridGeneratorService;
+import com.alaindroid.coloniser.service.generator.UnitGenerator;
+import com.alaindroid.coloniser.service.grid.CellGeneratorService;
 import dagger.Module;
 import dagger.Provides;
 
@@ -14,6 +15,11 @@ public class GeneratorModule {
     @Singleton
     public GridGeneratorService gridGeneratorService() {
         return new GridGeneratorService();
+    }    @Provides
+
+    @Singleton
+    public UnitGenerator unitGenerator() {
+        return new UnitGenerator();
     }
 
     @Provides

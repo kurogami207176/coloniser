@@ -1,4 +1,4 @@
-package com.alaindroid.coloniser.service;
+package com.alaindroid.coloniser.service.grid;
 
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.HexCell;
