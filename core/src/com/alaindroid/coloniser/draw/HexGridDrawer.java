@@ -22,11 +22,15 @@ public class HexGridDrawer {
 
     Map<TileType, Texture> tileTypeTextureMap = new HashMap<>();
 
+    float textureWidth;
+    float textureHeight;
+
     public void create() {
         for (TileType type: TileType.values()) {
-            tileTypeTextureMap.put(type,
-                    new Texture("terrain/" + type.name().toLowerCase() + ".png")
-                    );
+            Texture texture = new Texture("terrain/" + type.name().toLowerCase() + ".png");
+            textureWidth = texture.getWidth();
+            textureHeight = texture.getHeight();
+            tileTypeTextureMap.put(type,texture);
         }
     }
 
@@ -38,9 +42,11 @@ public class HexGridDrawer {
                      SpriteBatch spriteBatch,
                      float offsetX, float offsetY,
                      float drawWidth, float drawHeight,
-                     Grid grid, float s) {
+                     Grid grid) {
         final float xStart = offsetX + drawWidth / 2;
         final float yStart = offsetY + drawHeight / 2;
+
+        float s = textureHeight * 0.426f;
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.BLUE);
@@ -100,29 +106,26 @@ public class HexGridDrawer {
         double y = 2.65d/2 * s * b;
         double x = Math.sqrt(2.91d) * s * ( b/2 + r);
         double x2 = - Math.sqrt(2.91d) * s * ( b/2 + g );
-//        double y = 3/2 * s * b;
-//        double x = SQRT_THREE * s * ( b/2 + r);
-//        double x2 = - SQRT_THREE * s * ( b/2 + g );
 
         return Arrays.asList(
             new Point(xOffset + (float) x, yOffset + (float) y),
             new Point(xOffset + (float) x2, yOffset + (float) y)
         );
     }
-
-    private Coordinate toCoordinate(Point p, float s, float xOffset, float yOffset) {
-        double x = p.x() - xOffset;
-        double y = p.y() - yOffset;
-        double r;
-        double g;
-        double b;
-
-        b = 2/3 * y / s;
-        r = (Math.sqrt(2.91d)/2.65d * x - y/2.65d ) / s;
-        g = -(Math.sqrt(2.91d)/2.65d * x + y/2.65d ) / s;
-
-        return new Coordinate((int) r, (int) g, (int) b);
-    }
+//
+//    private Coordinate toCoordinate(Point p, float s, float xOffset, float yOffset) {
+//        double x = p.x() - xOffset;
+//        double y = p.y() - yOffset;
+//        double r;
+//        double g;
+//        double b;
+//
+//        b = 2/3 * y / s;
+//        r = (Math.sqrt(2.91d)/2.65d * x - y/2.65d ) / s;
+//        g = -(Math.sqrt(2.91d)/2.65d * x + y/2.65d ) / s;
+//
+//        return new Coordinate((int) r, (int) g, (int) b);
+//    }
 
     @Data
     @Accessors(fluent = true)

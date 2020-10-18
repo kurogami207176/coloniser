@@ -19,7 +19,8 @@ public class GridGeneratorService {
         for(int i =0 ; i < size; i++) {
             coordinates.addAll(grow(coordinates));
         }
-        coordinates.forEach(c -> grid.cell(c, cellGeneratorService.generate(c)));
+        coordinates.forEach(c -> grid.cell(c, cellGeneratorService.generate(c, grid.cells())));
+        gridNeighbors(grid);
         return grid;
     }
 
@@ -27,6 +28,11 @@ public class GridGeneratorService {
         return coordinates.stream().map(this::generateNeighbors)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet());
+    }
+
+    private void gridNeighbors(Grid grid) {
+        grid.cells().keySet().stream()
+                .forEach( coordinate -> grid.neighbors(coordinate, generateNeighbors(coordinate)) );
     }
 
     public Set<Coordinate> generateNeighbors(Coordinate origin) {

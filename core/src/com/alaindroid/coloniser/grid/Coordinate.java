@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.util.Set;
+
 @Data
 @Accessors(fluent = true)
 @AllArgsConstructor
 public class Coordinate {
     private int r, g, b;
-
 }

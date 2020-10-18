@@ -33,7 +33,7 @@ public class MainGameState implements GameState {
     public void onRender(float deltaTime) {
         spriteBatch.begin();
         backgroundDrawer.draw(spriteBatch);
-        hexGridDrawer.draw(shapeRenderer, spriteBatch, 100, 50, 400, 400, grid,38);
+        hexGridDrawer.draw(shapeRenderer, spriteBatch, 100, 50, 400, 400, grid);
         spriteBatch.end();
     }
 
