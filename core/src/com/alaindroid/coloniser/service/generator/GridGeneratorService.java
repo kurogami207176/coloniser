@@ -1,17 +1,20 @@
 package com.alaindroid.coloniser.service.generator;
 
+import com.alaindroid.coloniser.util.CoordinateUtil;
+import com.alaindroid.coloniser.draw.Point2D;
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.service.grid.CellGeneratorService;
 import lombok.SneakyThrows;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GridGeneratorService {
     @SneakyThrows
-    public Grid generateGrid(int size, CellGeneratorService cellGeneratorService) {
+    public Grid generateGrid(int size, CellGeneratorService cellGeneratorService, float s) {
         Coordinate curr = new Coordinate(0,0,0);
 
         Grid grid = new Grid();
@@ -22,6 +25,7 @@ public class GridGeneratorService {
         }
         coordinates.forEach(c -> grid.cell(c, cellGeneratorService.generate(c, grid.cells())));
         gridNeighbors(grid);
+        gridPoint(grid, s);
         return grid;
     }
 
@@ -29,6 +33,14 @@ public class GridGeneratorService {
         return coordinates.stream().map(this::generateNeighbors)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet());
+    }
+
+    private void gridPoint(Grid grid, float s) {
+        grid.cells().keySet().stream()
+                .forEach( coordinate -> {
+                    List<Point2D> points = CoordinateUtil.toPoint(coordinate, s, 0, 0);
+                    grid.point(coordinate, points);
+                } );
     }
 
     private void gridNeighbors(Grid grid) {

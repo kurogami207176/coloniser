@@ -1,7 +1,7 @@
 package com.alaindroid.coloniser.service;
 
 public class GamespeedService {
-    private float gameCycle = 1f;
+    private float gameCycle = 0.5f;
     private float ticker = 0f;
 
     public boolean tick(float delta) {
@@ -11,5 +11,9 @@ public class GamespeedService {
         }
         ticker = ticker - gameCycle;
         return true;
+    }
+
+    public float tickerPercent() {
+        return ticker / gameCycle;
     }
 }

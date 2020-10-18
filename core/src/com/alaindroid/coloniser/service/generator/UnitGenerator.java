@@ -1,19 +1,18 @@
 package com.alaindroid.coloniser.service.generator;
 
-import com.alaindroid.coloniser.CoordinateUtil;
+import com.alaindroid.coloniser.util.CoordinateUtil;
 import com.alaindroid.coloniser.grid.Grid;
-import com.alaindroid.coloniser.grid.HexCell;
 import com.alaindroid.coloniser.units.ShipUnit;
 import com.alaindroid.coloniser.units.Unit;
-import com.alaindroid.coloniser.units.WagonUnit;
+import com.alaindroid.coloniser.units.LandUnit;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class UnitGenerator {
     public List<Unit> generate(Grid grid) {
-        Unit ship = new ShipUnit();
-        Unit wagon = new WagonUnit();
+        Unit ship = ShipUnit.random();
+        Unit wagon = LandUnit.random();
         setCoordinate(ship, grid);
         setCoordinate(wagon, grid);
         List<Unit> gens = Arrays.asList(ship, wagon);
@@ -29,7 +28,9 @@ public class UnitGenerator {
                     System.out.println("valid: unit: "+ unit.unitType() + "\r\n\t coord: " + c + "\n\n\t hex: " +  grid.cell(c));
                 })
                 .findAny()
-                .ifPresent(unit::coordinate);
+                .ifPresent(c -> {
+                    unit.setNextDestination(c, grid.point(c).get(0));
+                });
     }
 
 

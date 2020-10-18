@@ -1,6 +1,6 @@
 package com.alaindroid.coloniser.service;
 
-import com.alaindroid.coloniser.CoordinateUtil;
+import com.alaindroid.coloniser.util.CoordinateUtil;
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.units.Unit;
@@ -21,7 +21,8 @@ public class NavigationService {
                 .collect(Collectors.toSet());
 
         Coordinate nextCoordinate = decide(unit, navigable,grid);
-        unit.coordinate(nextCoordinate);
+
+        unit.setNextDestination(nextCoordinate, grid.point(nextCoordinate).get(0));
         return unit;
     }
 

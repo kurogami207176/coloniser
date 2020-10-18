@@ -10,6 +10,7 @@ import com.alaindroid.coloniser.service.generator.GridGeneratorService;
 import com.alaindroid.coloniser.service.generator.UnitGenerator;
 import com.alaindroid.coloniser.service.grid.CellGeneratorService;
 import com.alaindroid.coloniser.units.Unit;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,6 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class MainGameState implements GameState {
-    public static final int OFFSET_X = 100;
-    public static final int OFFSET_Y = 50;
-    public static final int DRAW_WIDTH = 400;
-    public static final int DRAW_HEIGHT = 400;
     final HexGridDrawer hexGridDrawer;
     final UnitDrawer unitDrawer;
     final BackgroundDrawer backgroundDrawer;
@@ -31,7 +28,9 @@ public class MainGameState implements GameState {
     final NavigationService navigationService;
     final GamespeedService gamespeedService;
 
+    OrthographicCamera camera;
     ShapeRenderer shapeRenderer;
+    SpriteBatch bgSpriteBatch;
     SpriteBatch spriteBatch;
     Grid grid;
     List<Unit> units;
@@ -40,7 +39,10 @@ public class MainGameState implements GameState {
     public void onCreate() {
         shapeRenderer = new ShapeRenderer();
         spriteBatch = new SpriteBatch();
-        grid = gridGeneratorService.generateGrid(4, cellGeneratorService);
+        bgSpriteBatch = new SpriteBatch();
+        camera = new OrthographicCamera(800, 600);
+
+        grid = gridGeneratorService.generateGrid(4, cellGeneratorService, 38);
         units = unitGenerator.generate(grid);
         backgroundDrawer.create();
         hexGridDrawer.create();
@@ -52,11 +54,17 @@ public class MainGameState implements GameState {
         if (gamespeedService.tick(deltaTime)) {
             units.forEach( unit -> navigationService.navigate(unit, grid) );
         }
+        bgSpriteBatch.begin();
+        backgroundDrawer.draw(bgSpriteBatch);
+        bgSpriteBatch.end();
+
+        spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
-        backgroundDrawer.draw(spriteBatch);
-        hexGridDrawer.draw(shapeRenderer, spriteBatch, OFFSET_X, OFFSET_Y, DRAW_WIDTH, DRAW_HEIGHT, grid);
+
+        hexGridDrawer.draw(shapeRenderer, spriteBatch, grid);
+        unitDrawer.draw(shapeRenderer, spriteBatch, units, gamespeedService.tickerPercent());
+
         spriteBatch.end();
-        unitDrawer.draw(shapeRenderer, spriteBatch, OFFSET_X, OFFSET_Y, DRAW_WIDTH, DRAW_HEIGHT, units);
     }
 
     @Override

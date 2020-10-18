@@ -1,12 +1,13 @@
 package com.alaindroid.coloniser.draw;
 
-import com.alaindroid.coloniser.CoordinateUtil;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.grid.HexCell;
 import com.alaindroid.coloniser.grid.TileType;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,29 +31,22 @@ public class HexGridDrawer {
             Texture texture = new Texture("terrain/" + type.name().toLowerCase() + ".png");
             textureWidth = texture.getWidth();
             textureHeight = texture.getHeight();
-            tileTypeTextureMap.put(type,texture);
+            tileTypeTextureMap.put(type, texture);
         }
     }
 
     public void dispose() {
-        tileTypeTextureMap.values().forEach(Texture::dispose);
+        tileTypeTextureMap.values().stream().forEach(Texture::dispose);
     }
 
     public void draw(ShapeRenderer shapeRenderer,
                      SpriteBatch spriteBatch,
-                     float offsetX, float offsetY,
-                     float drawWidth, float drawHeight,
                      Grid grid) {
-        final float xStart = offsetX + drawWidth / 2;
-        final float yStart = offsetY + drawHeight / 2;
-
-        float s = textureHeight * 0.426f;
-
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.BLUE);
         List<HexDraw> hexDraws = grid.cells().keySet().stream()
                 .map(coordinate -> {
-                    List<Point2D> points = CoordinateUtil.toPoint(coordinate, s, xStart, yStart);
+                    List<Point2D> points = grid.point(coordinate);
                     HexCell cell = grid.cell(coordinate);
                     HexDraw hexDrawA = new HexDraw(points.get(0), cell);
                     HexDraw hexDrawB = new HexDraw(points.get(1), cell);

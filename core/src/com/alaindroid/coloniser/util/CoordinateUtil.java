@@ -1,4 +1,4 @@
-package com.alaindroid.coloniser;
+package com.alaindroid.coloniser.util;
 
 import com.alaindroid.coloniser.draw.Point2D;
 import com.alaindroid.coloniser.grid.Coordinate;
