@@ -1,5 +1,6 @@
 package com.alaindroid.coloniser.modules;
 
+import com.alaindroid.coloniser.draw.BackgroundDrawer;
 import com.alaindroid.coloniser.draw.HexGridDrawer;
 import dagger.Module;
 import dagger.Provides;
@@ -13,5 +14,11 @@ public class DrawModule {
     @Singleton
     public HexGridDrawer hexDrawer() {
         return new HexGridDrawer();
+    }
+
+    @Provides
+    @Singleton
+    public BackgroundDrawer backgroundDrawer() {
+        return new BackgroundDrawer();
     }
 }

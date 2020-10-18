@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @RequiredArgsConstructor
 public class HexCell {
+    private final TileType tileType;
     public int neighborCount() {
         return 6;
     }
