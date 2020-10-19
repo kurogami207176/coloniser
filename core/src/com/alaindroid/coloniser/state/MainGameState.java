@@ -42,7 +42,7 @@ public class MainGameState implements GameState {
         bgSpriteBatch = new SpriteBatch();
         camera = new OrthographicCamera(800, 600);
 
-        grid = gridGeneratorService.generateGrid(4, cellGeneratorService, 38);
+        grid = gridGeneratorService.generateGrid(7, cellGeneratorService, 38);
         units = unitGenerator.generate(grid);
         backgroundDrawer.create();
         hexGridDrawer.create();

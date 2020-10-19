@@ -13,6 +13,7 @@ public enum UnitType {
     TANKS_GREEN(5),
     TANKS_GREY(5),
     TANKS_NAVY(5),
+    SHIP(0),
     SHIP_CROSS(4),
     SHIP_GOLD(4),
     SHIP_NEUTRAL(4),
