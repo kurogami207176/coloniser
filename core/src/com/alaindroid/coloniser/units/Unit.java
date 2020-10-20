@@ -3,21 +3,22 @@ package com.alaindroid.coloniser.units;
 import com.alaindroid.coloniser.draw.Point2D;
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.TileType;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @ToString
 @Getter
 @Accessors(fluent = true)
 @RequiredArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Unit {
+    @EqualsAndHashCode.Include
+    private final String id = UUID.randomUUID().toString();
     private final UnitType unitType;
     private final Map<TileType, Float> traversalSpeed = new HashMap<>();
     private Coordinate coordinate;

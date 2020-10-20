@@ -1,8 +1,7 @@
 package com.alaindroid.coloniser.state;
 
 import com.alaindroid.coloniser.draw.BackgroundDrawer;
-import com.alaindroid.coloniser.draw.HexGridDrawer;
-import com.alaindroid.coloniser.draw.UnitDrawer;
+import com.alaindroid.coloniser.draw.SpriteDrawer;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.inputs.GameStateInputProcessor;
 import com.alaindroid.coloniser.service.DecisionService;
@@ -23,8 +22,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class MainGameState implements GameState {
-    final HexGridDrawer hexGridDrawer;
-    final UnitDrawer unitDrawer;
+    final SpriteDrawer spriteDrawer;
     final BackgroundDrawer backgroundDrawer;
     final GridGeneratorService gridGeneratorService;
     final UnitGenerator unitGenerator;
@@ -51,8 +49,7 @@ public class MainGameState implements GameState {
         List<Unit> units = unitGenerator.generate(grid, 3, 3);
         gameSave = new GameSave(grid, units);
         backgroundDrawer.create();
-        hexGridDrawer.create();
-        unitDrawer.create();
+        spriteDrawer.create();
 
         Gdx.input.setInputProcessor(new GameStateInputProcessor(camera, gameSave, decisionService, navigationService));
     }
@@ -70,17 +67,15 @@ public class MainGameState implements GameState {
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
 
-        hexGridDrawer.draw(shapeRenderer, spriteBatch, gameSave.grid());
-        unitDrawer.draw(spriteBatch, gameSave.units());
+        spriteDrawer.draw(spriteBatch, gameSave);
 
         spriteBatch.end();
     }
 
     @Override
     public void onDispose() {
-        hexGridDrawer.dispose();
+        spriteDrawer.dispose();
         backgroundDrawer.dispose();
-        unitDrawer.dispose();
     }
 
 }

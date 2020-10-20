@@ -1,21 +1,17 @@
 package com.alaindroid.coloniser.draw;
 
+import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.grid.HexCell;
 import com.alaindroid.coloniser.grid.TileType;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class HexGridDrawer {
@@ -38,25 +34,23 @@ public class HexGridDrawer {
         tileTypeTextureMap.values().stream().forEach(Texture::dispose);
     }
 
-    public void draw(ShapeRenderer shapeRenderer,
-                     SpriteBatch spriteBatch,
+    public List<SpriteDraw> draw(SpriteBatch spriteBatch,
                      Grid grid) {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.BLUE);
         List<HexDraw> hexDraws = grid.cells().keySet().stream()
                 .map(coordinate -> {
                     List<Point2D> points = coordinate.point();
                     HexCell cell = grid.cell(coordinate);
-                    HexDraw hexDrawA = new HexDraw(points.get(0), cell);
-                    HexDraw hexDrawB = new HexDraw(points.get(1), cell);
+                    HexDraw hexDrawA = new HexDraw(points.get(0), coordinate, cell);
+                    HexDraw hexDrawB = new HexDraw(points.get(1), coordinate, cell);
                     return Arrays.asList(hexDrawA, hexDrawB);
                 })
                 .flatMap(List::stream)
                 .sorted((a, b) -> (int) (b.p().y() - a.p().y()))
                 .collect(Collectors.toList());
-        hexDraws.forEach(d -> renderHexTile(spriteBatch, d.p(), d.cell()));
-
-        shapeRenderer.end();
+        return hexDraws.stream()
+                .map(d -> renderHexTile(spriteBatch, d))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     @Data
@@ -64,13 +58,18 @@ public class HexGridDrawer {
     @AllArgsConstructor
     private class HexDraw {
         private Point2D p;
+        private Coordinate coordinate;
         private HexCell cell;
     }
 
-    private void renderHexTile(SpriteBatch spriteBatch, Point2D p, HexCell cell) {
+    private SpriteDraw renderHexTile(SpriteBatch spriteBatch, HexDraw hexDraw) {
+        Point2D p = hexDraw.p();
+        HexCell cell = hexDraw.cell();
         Texture texture = tileTypeTextureMap.get(cell.tileType());
-        spriteBatch.draw(texture,
-                p.x() - texture.getWidth()/2,
-                p.y() - texture.getHeight()/2 - texture.getHeight()/7 + cell.currentPopHeight());
+        Sprite sprite = new Sprite(texture);
+        sprite.setX(p.x() - texture.getWidth()/2);
+        sprite.setY(p.y() - texture.getHeight()/2 - texture.getHeight()/7 + cell.currentPopHeight());
+        sprite.draw(spriteBatch);
+        return new SpriteDraw(sprite, (int) p.y());
     }
 }

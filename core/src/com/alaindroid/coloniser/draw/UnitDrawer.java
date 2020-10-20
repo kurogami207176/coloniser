@@ -6,10 +6,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class UnitDrawer {
     Map<UnitType, List<Texture>> unitTypeTextureMap = new HashMap<>();
@@ -33,18 +31,21 @@ public class UnitDrawer {
         unitTypeTextureMap.values().stream().flatMap(List::stream).forEach(Texture::dispose);
     }
 
-    public void draw(SpriteBatch spriteBatch,
+    public List<SpriteDraw> draw(SpriteBatch spriteBatch,
                      List<Unit> units) {
-        units.forEach( unit -> renderTexture(spriteBatch, unit) );
+        return units.stream()
+                .map( unit -> renderTexture(spriteBatch, unit) )
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
-    private void renderTexture(SpriteBatch spriteBatch, Unit unit) {
+    private SpriteDraw renderTexture(SpriteBatch spriteBatch, Unit unit) {
         Point2D p = unit.currentPoint();
         int level = unit.healthLevel();
         List<Texture> textures = unitTypeTextureMap.get(unit.unitType());
         if (textures == null || textures.isEmpty()) {
             System.out.println("No texture found for " + unit.unitType());
-            return;
+            return null;
         }
         Texture texture = textures.get(level);
         Sprite sprite = new Sprite(texture);
@@ -54,6 +55,7 @@ public class UnitDrawer {
         sprite.setY(p.y() - texture.getHeight() / 2);
         sprite.setRotation(unit.currentWobbleAngle());
         sprite.draw(spriteBatch);
+        return new SpriteDraw(sprite, (int) p.y());
     }
 
 }
