@@ -53,6 +53,7 @@ public class AnimationProcessorService {
         boolean xPos = target.x() > current.x();
         boolean yPos = target.y() > current.y();
 
+        float slope = Math.abs(target.y() - current.x() / target.x() - current.x());
         float newX = xPos
                 ? Math.min(target.x(), current.x() + deltaTime * unitMoveSpeed)
                 : Math.max(target.x(), current.x() - deltaTime * unitMoveSpeed);
