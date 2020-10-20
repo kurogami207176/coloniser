@@ -40,8 +40,6 @@ public class UnitDrawer {
                      List<Unit> units,
                      float tickerPercent) {
         units.forEach( unit -> renderTexture(spriteBatch, unit, tickerPercent) );
-        units.forEach( unit -> renderShape(shapeRenderer, unit, tickerPercent) );
-
     }
 
     private void renderTexture(SpriteBatch spriteBatch, Unit unit,
@@ -50,6 +48,7 @@ public class UnitDrawer {
         int level = unit.healthLevel();
         List<Texture> textures = unitTypeTextureMap.get(unit.unitType());
         if (textures == null || textures.isEmpty()) {
+            System.out.println("No texture found for " + unit.unitType());
             return;
         }
         Texture texture = textures.get(level);
@@ -58,37 +57,8 @@ public class UnitDrawer {
         sprite.setScale(scale);
         sprite.setX(p.x() - texture.getWidth() / 2);
         sprite.setY(p.y() - texture.getHeight() / 2);
+        sprite.setRotation(unit.currentWobbleAngle());
         sprite.draw(spriteBatch);
-    }
-
-    private void renderShape(ShapeRenderer shapeRenderer, Unit unit,
-                        float tickerPercent) {
-        float s = 38;
-        if (unitTypeTextureMap.keySet().contains(unit.unitType())) {
-            // Dont render already rendered
-            shapeRenderer.end();
-            return;
-        }
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        Point2D p = derivePoint(unit, tickerPercent);
-        switch (unit.unitType()){
-            case LAND:
-                shapeRenderer.setColor(Color.BROWN);
-                shapeRenderer.rect(p.x()-s/2, p.y()-s/2, s, s);
-                break;
-            case SHIP_CROSS:
-            case SHIP_NEUTRAL:
-            case SHIP_PIRATE:
-            case SHIP_GOLD:
-            case SHIP_SPEED:
-            case SHIP_SWORD:
-                shapeRenderer.setColor(Color.DARK_GRAY);
-                shapeRenderer.triangle(p.x(), p.y() + s/3,
-                        p.x() - s/3, p.y() - s/2,
-                        p.x() + s/3, p.y() - s/2);
-                break;
-        }
-        shapeRenderer.end();
     }
 
     private Point2D derivePoint(Unit unit, float tickerPercent) {

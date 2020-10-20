@@ -3,15 +3,14 @@ package com.alaindroid.coloniser.units;
 import com.alaindroid.coloniser.draw.Point2D;
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.TileType;
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@ToString
 @Getter
 @Accessors(fluent = true)
 @RequiredArgsConstructor
@@ -25,6 +24,19 @@ public class Unit {
 
     private Coordinate previousCoordinate;
     private Point2D previousPoint;
+
+    @Setter
+    private float currentWobbleAngle = 0;
+    @Setter
+    private boolean currentWobbleDirectionLeft = false;
+
+    @Setter
+    private boolean wobble = false;
+
+    public void resetPrevious() {
+        this.previousCoordinate = null;
+        this.previousPoint = null;
+    }
 
     public void setNextDestination(Coordinate nextCoordinate, Point2D nextPoint) {
         this.previousCoordinate = this.coordinate;

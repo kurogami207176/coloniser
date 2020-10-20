@@ -1,5 +1,6 @@
 package com.alaindroid.coloniser.modules;
 
+import com.alaindroid.coloniser.service.DecisionService;
 import com.alaindroid.coloniser.service.GamespeedService;
 import com.alaindroid.coloniser.service.NavigationService;
 import dagger.Module;
@@ -13,6 +14,12 @@ public class ServiceModule {
     @Singleton
     public NavigationService navigationService() {
         return new NavigationService();
+    }
+
+    @Provides
+    @Singleton
+    public DecisionService decisionService() {
+        return new DecisionService();
     }
 
     @Provides

@@ -3,6 +3,7 @@ package com.alaindroid.coloniser.modules;
 import com.alaindroid.coloniser.draw.BackgroundDrawer;
 import com.alaindroid.coloniser.draw.HexGridDrawer;
 import com.alaindroid.coloniser.draw.UnitDrawer;
+import com.alaindroid.coloniser.service.DecisionService;
 import com.alaindroid.coloniser.service.animation.AnimationProcessorService;
 import com.alaindroid.coloniser.service.generator.UnitGenerator;
 import com.alaindroid.coloniser.service.grid.CellGeneratorService;
@@ -27,9 +28,10 @@ public class StateModule {
                                        UnitGenerator unitGenerator,
                                        CellGeneratorService cellGeneratorService,
                                        NavigationService navigationService,
+                                       DecisionService decisionService,
                                        GamespeedService gamespeedService,
                                        AnimationProcessorService animationProcessorService) {
         return new MainGameState(hexDrawer, unitDrawer, backgroundDrawer, gridGeneratorService, unitGenerator,
-                cellGeneratorService, navigationService, gamespeedService, animationProcessorService);
+                cellGeneratorService, navigationService, decisionService, gamespeedService, animationProcessorService);
     }
 }
