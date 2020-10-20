@@ -5,6 +5,7 @@ import com.alaindroid.coloniser.draw.HexGridDrawer;
 import com.alaindroid.coloniser.draw.UnitDrawer;
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
+import com.alaindroid.coloniser.inputs.GameStateInputProcessor;
 import com.alaindroid.coloniser.service.DecisionService;
 import com.alaindroid.coloniser.service.GamespeedService;
 import com.alaindroid.coloniser.service.NavigationService;
@@ -13,6 +14,7 @@ import com.alaindroid.coloniser.service.generator.GridGeneratorService;
 import com.alaindroid.coloniser.service.generator.UnitGenerator;
 import com.alaindroid.coloniser.service.grid.CellGeneratorService;
 import com.alaindroid.coloniser.units.Unit;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -38,8 +40,7 @@ public class MainGameState implements GameState {
     ShapeRenderer shapeRenderer;
     SpriteBatch bgSpriteBatch;
     SpriteBatch spriteBatch;
-    Grid grid;
-    List<Unit> units;
+    GameSave gameSave;
 
     @Override
     public void onCreate() {
@@ -48,32 +49,31 @@ public class MainGameState implements GameState {
         bgSpriteBatch = new SpriteBatch();
         camera = new OrthographicCamera(800, 600);
 
-        grid = gridGeneratorService.generateGrid(5, cellGeneratorService, 38);
-        units = unitGenerator.generate(grid, 3, 3);
+        Grid grid = gridGeneratorService.generateGrid(5, cellGeneratorService, 38);
+        List<Unit> units = unitGenerator.generate(grid, 3, 3);
+        gameSave = new GameSave(grid, units);
         backgroundDrawer.create();
         hexGridDrawer.create();
         unitDrawer.create();
+
+        Gdx.input.setInputProcessor(new GameStateInputProcessor(camera, gameSave, decisionService));
     }
 
     @Override
     public void onRender(float deltaTime) {
         if (gamespeedService.tick(deltaTime)) {
             if (decisionService.isWaitingForSelection()) {
-                Unit unit = decisionService.select(units, grid);
+                Unit unit = decisionService.select(gameSave);
                 unit.wobble(true);
-                postSelectionReset();
+                gameSave.postSelectionReset();
             } else if (decisionService.isWaitingForDecision()) {
-                Unit wobblingUnit = findWobblingUnit();
-                if (wobblingUnit == null) {
-                    units.forEach(System.err::println);
-                }
-                Set<Coordinate> navigable = navigationService.navigable(wobblingUnit, grid);
-                decisionService.decide(wobblingUnit, grid, navigable);
-                postDecisionReset();
+                Unit wobblingUnit = gameSave.findWobblingUnit();
+                Set<Coordinate> navigable = navigationService.navigable(wobblingUnit, gameSave.grid());
+                decisionService.decide(wobblingUnit, gameSave.grid(), navigable);
+                gameSave.postDecisionReset();
             }
         }
-        animationProcessorService.processAnimation(grid, deltaTime);
-        animationProcessorService.processAnimation(units, deltaTime);
+        animationProcessorService.processAnimation(gameSave, deltaTime);
         bgSpriteBatch.begin();
         backgroundDrawer.draw(bgSpriteBatch);
         bgSpriteBatch.end();
@@ -81,8 +81,8 @@ public class MainGameState implements GameState {
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
 
-        hexGridDrawer.draw(shapeRenderer, spriteBatch, grid);
-        unitDrawer.draw(shapeRenderer, spriteBatch, units, gamespeedService.tickerPercent());
+        hexGridDrawer.draw(shapeRenderer, spriteBatch, gameSave.grid());
+        unitDrawer.draw(shapeRenderer, spriteBatch, gameSave.units(), gamespeedService.tickerPercent());
 
         spriteBatch.end();
     }
@@ -94,17 +94,4 @@ public class MainGameState implements GameState {
         unitDrawer.dispose();
     }
 
-    private Unit findWobblingUnit() {
-        return units.stream().filter(Unit::wobble).findFirst().orElse(null);
-    }
-
-    private void postSelectionReset() {
-        units.forEach(u -> u.resetPrevious());
-    }
-    private void postDecisionReset() {
-        grid.unpopAll();
-        units.forEach(unit -> {
-            unit.wobble(false);
-        });
-    }
 }

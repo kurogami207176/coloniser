@@ -2,9 +2,9 @@ package com.alaindroid.coloniser.service;
 
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
+import com.alaindroid.coloniser.state.GameSave;
 import com.alaindroid.coloniser.units.Unit;
 import com.alaindroid.coloniser.util.CoordinateUtil;
-import lombok.Getter;
 
 import java.security.InvalidParameterException;
 import java.util.List;
@@ -17,9 +17,10 @@ public class DecisionService {
 
     private DecisionState decisionState = DecisionState.SELECTION;
 
-    public Unit select(List<Unit> unitList, Grid grid) {
+    public Unit select(GameSave gameSave) {
+        List<Unit> unitList = gameSave.units();
         Unit selected =  unitList.get(random.nextInt(unitList.size()));
-        popPossibles(selected, grid);
+        popPossibles(selected, gameSave.grid());
         decisionState = DecisionState.DECISION;
         return selected;
     }
