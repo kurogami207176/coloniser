@@ -1,13 +1,13 @@
 package com.alaindroid.coloniser.service.generator;
 
-import com.alaindroid.coloniser.units.UnitType;
-import com.alaindroid.coloniser.util.CoordinateUtil;
 import com.alaindroid.coloniser.grid.Grid;
+import com.alaindroid.coloniser.units.LandUnit;
 import com.alaindroid.coloniser.units.ShipUnit;
 import com.alaindroid.coloniser.units.Unit;
-import com.alaindroid.coloniser.units.LandUnit;
+import com.alaindroid.coloniser.util.CoordinateUtil;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -36,7 +36,7 @@ public class UnitGenerator {
                 .filter(coordinate -> unitsSoFar.stream().map(Unit::coordinate).filter(Objects::nonNull).noneMatch(coordinate::equals))
                 .findAny()
                 .ifPresent(c -> {
-                    unit.setNextDestination(c, grid.point(c).get(0));
+                    unit.setNextDestination(c);
                 });
     }
 

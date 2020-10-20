@@ -45,7 +45,7 @@ public class HexGridDrawer {
         shapeRenderer.setColor(Color.BLUE);
         List<HexDraw> hexDraws = grid.cells().keySet().stream()
                 .map(coordinate -> {
-                    List<Point2D> points = grid.point(coordinate);
+                    List<Point2D> points = coordinate.point();
                     HexCell cell = grid.cell(coordinate);
                     HexDraw hexDrawA = new HexDraw(points.get(0), cell);
                     HexDraw hexDrawB = new HexDraw(points.get(1), cell);

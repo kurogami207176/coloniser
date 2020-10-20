@@ -28,7 +28,7 @@ public class DecisionService {
     public Unit decide(Unit unit, Grid grid, Set<Coordinate> navigable) {
         Coordinate nextCoordinate = random(unit, navigable);
 
-        unit.setNextDestination(nextCoordinate, grid.point(nextCoordinate).get(0));
+        unit.setNextDestination(nextCoordinate);
         decisionState = DecisionState.SELECTION;
         return unit;
     }

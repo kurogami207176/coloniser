@@ -62,11 +62,15 @@ public class UnitDrawer {
     }
 
     private Point2D derivePoint(Unit unit, float tickerPercent) {
-        if (unit.previousPoint() == null) {
-            return unit.point();
+        Point2D point = unit.coordinate().point().get(0);
+        if (unit.previousCoordinate() == null) {
+            return unit.coordinate().point().get(0);
         }
-        float midX = tickerPercent * (unit.point().x() - unit.previousPoint().x()) + unit.previousPoint().x();
-        float midY = tickerPercent * (unit.point().y() - unit.previousPoint().y()) + unit.previousPoint().y();
+
+        Point2D prevPoint = unit.previousCoordinate().point().get(0);
+
+        float midX = tickerPercent * (point.x() - prevPoint.x()) + prevPoint.x();
+        float midY = tickerPercent * (point.y() - prevPoint.y()) + prevPoint.y();
         return new Point2D(midX, midY);
     }
 

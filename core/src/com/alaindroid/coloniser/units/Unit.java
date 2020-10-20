@@ -1,9 +1,11 @@
 package com.alaindroid.coloniser.units;
 
-import com.alaindroid.coloniser.draw.Point2D;
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.TileType;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.util.HashMap;
@@ -18,12 +20,10 @@ public class Unit {
     private final UnitType unitType;
     private final Map<TileType, Float> traversalSpeed = new HashMap<>();
     private Coordinate coordinate;
-    private Point2D point;
     private float maxHealth = 100;
     private float currHealth = 100;
 
     private Coordinate previousCoordinate;
-    private Point2D previousPoint;
 
     @Setter
     private float currentWobbleAngle = 0;
@@ -35,15 +35,11 @@ public class Unit {
 
     public void resetPrevious() {
         this.previousCoordinate = null;
-        this.previousPoint = null;
     }
 
-    public void setNextDestination(Coordinate nextCoordinate, Point2D nextPoint) {
+    public void setNextDestination(Coordinate nextCoordinate) {
         this.previousCoordinate = this.coordinate;
-        this.previousPoint = this.point;
-
         this.coordinate = nextCoordinate;
-        this.point = nextPoint;
     }
 
     public Optional<Float> traversalSpeed(TileType tileType) {

@@ -12,30 +12,15 @@ import java.util.function.Predicate;
 
 public class CoordinateUtil {
 
-    public static List<Point2D> toPoint(Coordinate coordinate, float s, float xOffset, float yOffset) {
-        double r = coordinate.r();
-        double g = coordinate.g();
-        double b = coordinate.b();
-
+    public static List<Point2D> toPoint(double r, double g, double b, float s) {
         double y = 2.65d/2 * s * b;
         double x = Math.sqrt(2.91d) * s * ( b/2 + r);
         double x2 = - Math.sqrt(2.91d) * s * ( b/2 + g );
 
         return Arrays.asList(
-                new Point2D(xOffset + (float) x, yOffset + (float) y),
-                new Point2D(xOffset + (float) x2, yOffset + (float) y)
+                new Point2D((float) x, (float) y),
+                new Point2D( (float) x2, (float) y)
         );
-    }
-
-    public static Coordinate toCoordinate(Point2D p, float s, float xOffset, float yOffset) {
-        double x = p.x() - xOffset;
-        double y = p.y() - yOffset;
-
-        double b = 2/3 * y / s;
-        double r = (Math.sqrt(2.91d)/2.65d * x - y/2.65d ) / s;
-        double g = -(Math.sqrt(2.91d)/2.65d * x + y/2.65d ) / s;
-
-        return new Coordinate((int) r, (int) g, (int) b);
     }
 
     public static Predicate<Coordinate> navigable(Unit unit, Grid grid) {
