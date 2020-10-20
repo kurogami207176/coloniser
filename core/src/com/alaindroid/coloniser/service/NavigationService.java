@@ -12,6 +12,17 @@ import java.util.stream.Collectors;
 
 public class NavigationService {
     public Unit navigate(Unit unit, Grid grid) {
+        Set<Coordinate> navigable = findNavigableCoordinates(unit, grid);
+
+        Coordinate nextCoordinate = decide(unit, navigable,grid);
+
+        unit.setNextDestination(nextCoordinate, grid.point(nextCoordinate).get(0));
+        popPossibles(unit, grid);
+
+        return unit;
+    }
+
+    private Set<Coordinate> findNavigableCoordinates(Unit unit, Grid grid) {
         Set<Coordinate> neighbors = grid.neighbors(unit.coordinate());
         if (neighbors == null) {
             throw new InvalidParameterException("No neighbors for unit coords: " + unit.coordinate());
@@ -19,11 +30,13 @@ public class NavigationService {
         Set<Coordinate> navigable = neighbors.stream()
                 .filter(CoordinateUtil.navigable(unit, grid))
                 .collect(Collectors.toSet());
+        return navigable;
+    }
 
-        Coordinate nextCoordinate = decide(unit, navigable,grid);
-
-        unit.setNextDestination(nextCoordinate, grid.point(nextCoordinate).get(0));
-        return unit;
+    private void popPossibles(Unit unit, Grid grid) {
+        findNavigableCoordinates(unit, grid).stream()
+                .map(grid::cell)
+                .forEach(h -> h.popped(true));
     }
 
     private Coordinate decide(Unit unit, Set<Coordinate> navigable, Grid grid) {

@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @RequiredArgsConstructor
 public class HexCell {
     private final TileType tileType;
-    public int neighborCount() {
-        return 6;
-    }
+
+    private boolean popped = false;
+    private float currentPopHeight = 0;
 }

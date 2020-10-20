@@ -49,4 +49,8 @@ public class Grid {
         return pointMap.get(coordinate);
     }
 
+    public void unpopAll() {
+        cells.values().forEach(h -> h.popped(false));
+    }
+
 }

@@ -5,9 +5,7 @@ import com.alaindroid.coloniser.grid.HexCell;
 import com.alaindroid.coloniser.grid.TileType;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class HexGridDrawer {
@@ -72,6 +71,6 @@ public class HexGridDrawer {
         Texture texture = tileTypeTextureMap.get(cell.tileType());
         spriteBatch.draw(texture,
                 p.x() - texture.getWidth()/2,
-                p.y() - texture.getHeight()/2 - texture.getHeight()/7);
+                p.y() - texture.getHeight()/2 - texture.getHeight()/7 + cell.currentPopHeight());
     }
 }

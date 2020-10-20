@@ -6,6 +6,7 @@ import com.alaindroid.coloniser.draw.UnitDrawer;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.service.GamespeedService;
 import com.alaindroid.coloniser.service.NavigationService;
+import com.alaindroid.coloniser.service.animation.AnimationProcessorService;
 import com.alaindroid.coloniser.service.generator.GridGeneratorService;
 import com.alaindroid.coloniser.service.generator.UnitGenerator;
 import com.alaindroid.coloniser.service.grid.CellGeneratorService;
@@ -27,6 +28,7 @@ public class MainGameState implements GameState {
     final CellGeneratorService cellGeneratorService;
     final NavigationService navigationService;
     final GamespeedService gamespeedService;
+    final AnimationProcessorService animationProcessorService;
 
     OrthographicCamera camera;
     ShapeRenderer shapeRenderer;
@@ -52,8 +54,10 @@ public class MainGameState implements GameState {
     @Override
     public void onRender(float deltaTime) {
         if (gamespeedService.tick(deltaTime)) {
+            grid.unpopAll();
             units.forEach( unit -> navigationService.navigate(unit, grid) );
         }
+        animationProcessorService.processAnimation(grid, deltaTime);
         bgSpriteBatch.begin();
         backgroundDrawer.draw(bgSpriteBatch);
         bgSpriteBatch.end();
