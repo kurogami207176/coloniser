@@ -2,11 +2,9 @@ package com.alaindroid.coloniser.draw;
 
 import com.alaindroid.coloniser.units.Unit;
 import com.alaindroid.coloniser.units.UnitType;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,16 +33,13 @@ public class UnitDrawer {
         unitTypeTextureMap.values().stream().flatMap(List::stream).forEach(Texture::dispose);
     }
 
-    public void draw(ShapeRenderer shapeRenderer,
-                     SpriteBatch spriteBatch,
-                     List<Unit> units,
-                     float tickerPercent) {
-        units.forEach( unit -> renderTexture(spriteBatch, unit, tickerPercent) );
+    public void draw(SpriteBatch spriteBatch,
+                     List<Unit> units) {
+        units.forEach( unit -> renderTexture(spriteBatch, unit) );
     }
 
-    private void renderTexture(SpriteBatch spriteBatch, Unit unit,
-                        float tickerPercent) {
-        Point2D p = derivePoint(unit, tickerPercent);
+    private void renderTexture(SpriteBatch spriteBatch, Unit unit) {
+        Point2D p = unit.currentPoint();
         int level = unit.healthLevel();
         List<Texture> textures = unitTypeTextureMap.get(unit.unitType());
         if (textures == null || textures.isEmpty()) {
@@ -59,19 +54,6 @@ public class UnitDrawer {
         sprite.setY(p.y() - texture.getHeight() / 2);
         sprite.setRotation(unit.currentWobbleAngle());
         sprite.draw(spriteBatch);
-    }
-
-    private Point2D derivePoint(Unit unit, float tickerPercent) {
-        Point2D point = unit.coordinate().point().get(0);
-        if (unit.previousCoordinate() == null) {
-            return unit.coordinate().point().get(0);
-        }
-
-        Point2D prevPoint = unit.previousCoordinate().point().get(0);
-
-        float midX = tickerPercent * (point.x() - prevPoint.x()) + prevPoint.x();
-        float midY = tickerPercent * (point.y() - prevPoint.y()) + prevPoint.y();
-        return new Point2D(midX, midY);
     }
 
 }

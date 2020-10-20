@@ -1,5 +1,6 @@
 package com.alaindroid.coloniser.units;
 
+import com.alaindroid.coloniser.draw.Point2D;
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.TileType;
 import lombok.Getter;
@@ -23,23 +24,33 @@ public class Unit {
     private float maxHealth = 100;
     private float currHealth = 100;
 
-    private Coordinate previousCoordinate;
-
     @Setter
     private float currentWobbleAngle = 0;
     @Setter
     private boolean currentWobbleDirectionLeft = false;
+    @Setter
+    private Point2D currentPoint;
+    @Setter
+    private Point2D targetPoint;
 
     @Setter
     private boolean wobble = false;
 
-    public void resetPrevious() {
-        this.previousCoordinate = null;
+    public void setNextDestination(Coordinate nextCoordinate) {
+        if (coordinate != null) {
+            this.currentPoint = this.coordinate.point().get(0);
+        }
+        else {
+            this.coordinate = nextCoordinate;
+        }
+        this.targetPoint = nextCoordinate.point().get(0);
+        this.coordinate = nextCoordinate;
     }
 
-    public void setNextDestination(Coordinate nextCoordinate) {
-        this.previousCoordinate = this.coordinate;
-        this.coordinate = nextCoordinate;
+    public Point2D currentPoint() {
+        return currentPoint == null
+                ? coordinate.point().get(0)
+                : currentPoint;
     }
 
     public Optional<Float> traversalSpeed(TileType tileType) {

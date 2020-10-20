@@ -35,9 +35,7 @@ public class UnitGenerator {
                 .filter(CoordinateUtil.navigable(unit, grid))
                 .filter(coordinate -> unitsSoFar.stream().map(Unit::coordinate).filter(Objects::nonNull).noneMatch(coordinate::equals))
                 .findAny()
-                .ifPresent(c -> {
-                    unit.setNextDestination(c);
-                });
+                .ifPresent(c -> unit.setNextDestination(c) );
     }
 
 

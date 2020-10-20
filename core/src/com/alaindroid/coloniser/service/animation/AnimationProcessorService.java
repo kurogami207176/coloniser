@@ -1,5 +1,6 @@
 package com.alaindroid.coloniser.service.animation;
 
+import com.alaindroid.coloniser.draw.Point2D;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.grid.HexCell;
 import com.alaindroid.coloniser.state.GameSave;
@@ -13,6 +14,8 @@ public class AnimationProcessorService {
 
     private static final float wobbleSpeed = 250f;
     private static final float maxWobbleAngle = 15f;
+
+    private static final float unitMoveSpeed = 150f;
 
     public void processAnimation(GameSave gameSave, float deltaTime) {
         processAnimation(gameSave.grid(), deltaTime);
@@ -40,6 +43,27 @@ public class AnimationProcessorService {
     }
 
     private void processAnimation(Unit unit, float deltaTime) {
+        processWobble(unit, deltaTime);
+        processUnitMove(unit, deltaTime);
+    }
+
+    private void processUnitMove(Unit unit, float deltaTime) {
+        Point2D current = unit.currentPoint();
+        Point2D target = unit.targetPoint();
+        boolean xPos = target.x() > current.x();
+        boolean yPos = target.y() > current.y();
+
+        float newX = xPos
+                ? Math.min(target.x(), current.x() + deltaTime * unitMoveSpeed)
+                : Math.max(target.x(), current.x() - deltaTime * unitMoveSpeed);
+        float newY = yPos
+                ? Math.min(target.y(), current.y() + deltaTime * unitMoveSpeed)
+                : Math.max(target.y(), current.y() - deltaTime * unitMoveSpeed);
+
+        unit.currentPoint(new Point2D(newX, newY));
+    }
+
+    private void processWobble(Unit unit, float deltaTime) {
         float newWobbleAngle;
         if (unit.wobble() && Math.abs(unit.currentWobbleAngle()) < maxWobbleAngle) {
             if (unit.currentWobbleDirectionLeft()) {

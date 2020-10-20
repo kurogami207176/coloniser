@@ -17,13 +17,14 @@ public class GameSave {
         return units.stream().filter(Unit::wobble).findFirst().orElse(null);
     }
 
-    public void postSelectionReset() {
-        units.forEach(u -> u.resetPrevious());
-    }
     public void postDecisionReset() {
         grid.unpopAll();
         units.forEach(unit -> {
             unit.wobble(false);
         });
+    }
+
+    public void reset() {
+        postDecisionReset();
     }
 }

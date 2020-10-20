@@ -3,7 +3,6 @@ package com.alaindroid.coloniser.state;
 import com.alaindroid.coloniser.draw.BackgroundDrawer;
 import com.alaindroid.coloniser.draw.HexGridDrawer;
 import com.alaindroid.coloniser.draw.UnitDrawer;
-import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.inputs.GameStateInputProcessor;
 import com.alaindroid.coloniser.service.DecisionService;
@@ -21,7 +20,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 public class MainGameState implements GameState {
@@ -56,22 +54,13 @@ public class MainGameState implements GameState {
         hexGridDrawer.create();
         unitDrawer.create();
 
-        Gdx.input.setInputProcessor(new GameStateInputProcessor(camera, gameSave, decisionService));
+        Gdx.input.setInputProcessor(new GameStateInputProcessor(camera, gameSave, decisionService, navigationService));
     }
 
     @Override
     public void onRender(float deltaTime) {
         if (gamespeedService.tick(deltaTime)) {
-            if (decisionService.isWaitingForSelection()) {
-                Unit unit = decisionService.select(gameSave);
-                unit.wobble(true);
-                gameSave.postSelectionReset();
-            } else if (decisionService.isWaitingForDecision()) {
-                Unit wobblingUnit = gameSave.findWobblingUnit();
-                Set<Coordinate> navigable = navigationService.navigable(wobblingUnit, gameSave.grid());
-                decisionService.decide(wobblingUnit, gameSave.grid(), navigable);
-                gameSave.postDecisionReset();
-            }
+            // TODO: Do something?
         }
         animationProcessorService.processAnimation(gameSave, deltaTime);
         bgSpriteBatch.begin();
@@ -82,7 +71,7 @@ public class MainGameState implements GameState {
         spriteBatch.begin();
 
         hexGridDrawer.draw(shapeRenderer, spriteBatch, gameSave.grid());
-        unitDrawer.draw(shapeRenderer, spriteBatch, gameSave.units(), gamespeedService.tickerPercent());
+        unitDrawer.draw(spriteBatch, gameSave.units());
 
         spriteBatch.end();
     }

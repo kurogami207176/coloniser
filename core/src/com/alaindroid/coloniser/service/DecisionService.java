@@ -17,20 +17,25 @@ public class DecisionService {
 
     private DecisionState decisionState = DecisionState.SELECTION;
 
-    public Unit select(GameSave gameSave) {
-        List<Unit> unitList = gameSave.units();
-        Unit selected =  unitList.get(random.nextInt(unitList.size()));
+    public void reset() {
+        decisionState = DecisionState.SELECTION;
+    }
+
+    public Unit select(GameSave gameSave, Unit selected) {
+        selected.wobble(true);
         popPossibles(selected, gameSave.grid());
         decisionState = DecisionState.DECISION;
         return selected;
     }
 
-    public Unit decide(Unit unit, Grid grid, Set<Coordinate> navigable) {
-        Coordinate nextCoordinate = random(unit, navigable);
-
+    public boolean decide(Unit unit, Grid grid, Set<Coordinate> navigable, Coordinate nextCoordinate) {
+        if (!navigable.contains(nextCoordinate)) {
+            reset();
+            return false;
+        }
         unit.setNextDestination(nextCoordinate);
         decisionState = DecisionState.SELECTION;
-        return unit;
+        return true;
     }
 
     private Set<Coordinate> findNavigableCoordinates(Unit unit, Grid grid) {
