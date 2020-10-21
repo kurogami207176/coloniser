@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class DecisionService {
@@ -37,6 +38,7 @@ public class DecisionService {
         }
         Coordinate[] nextCoords = findPath(unit, nextCoordinate, grid).toArray(new Coordinate[0]);
         if (nextCoords.length > 0) {
+            unit.moving(true);
             unit.setNextDestination(nextCoords);
             decisionState = DecisionState.SELECTION;
             return true;
@@ -51,12 +53,15 @@ public class DecisionService {
         Coordinate current = unit.coordinate();
         List<Coordinate> pathTaken = new ArrayList<>();
         Set<Coordinate> blockSet = new HashSet<>();
+        Set<Coordinate> considered = new HashSet<>();
         while (!current.equals(end)) {
-            Optional<Coordinate> coords = navigationService
+            Set<Coordinate> possibles = navigationService
                     .navigable(unit, current, grid, 1)
                     .stream()
                     .filter(c -> !pathTaken.contains(c))
                     .filter(c -> !blockSet.contains(c))
+                    .collect(Collectors.toSet());
+            Optional<Coordinate> coords = possibles.stream()
                     .map(n -> new CoordinateDistance(n, end))
                     .sorted(Comparator.comparing(CoordinateDistance::distance))
                     .findFirst()
@@ -64,6 +69,8 @@ public class DecisionService {
             if (coords.isPresent()) {
                 current = coords.get();
                 pathTaken.add(current);
+                possibles.remove(current);
+                considered.addAll(possibles);
             }
             else {
                 Coordinate blockThis = pathTaken.remove(pathTaken.size()-1);

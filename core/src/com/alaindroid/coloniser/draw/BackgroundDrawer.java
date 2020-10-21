@@ -1,5 +1,6 @@
 package com.alaindroid.coloniser.draw;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,7 +21,8 @@ public class BackgroundDrawer {
         backgroundTexture.dispose();
     }
 
-    public void draw(SpriteBatch spriteBatch) {
+    public void draw(SpriteBatch spriteBatch, float width, float height) {
+        backgroundSprite.setSize(width, height);
         backgroundSprite.draw(spriteBatch);
 //        spriteBatch.draw(backgroundTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }

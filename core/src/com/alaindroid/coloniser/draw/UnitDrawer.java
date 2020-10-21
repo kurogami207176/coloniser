@@ -55,7 +55,7 @@ public class UnitDrawer {
         sprite.setY(p.y() - texture.getHeight() / 2);
         sprite.setRotation(unit.currentWobbleAngle());
         sprite.draw(spriteBatch);
-        return new SpriteDraw(sprite, (int) p.y());
+        return new SpriteDraw(sprite, (int) p.y() - (unit.moving()? 100 : 0));
     }
 
 }

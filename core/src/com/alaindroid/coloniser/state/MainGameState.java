@@ -40,16 +40,18 @@ public class MainGameState implements GameState {
     SpriteBatch bgSpriteBatch;
     SpriteBatch spriteBatch;
     GameSave gameSave;
+    float width;
+    float height;
 
     @Override
     public void onCreate() {
         shapeRenderer = new ShapeRenderer();
         spriteBatch = new SpriteBatch();
         bgSpriteBatch = new SpriteBatch();
-        float width = isAndroid()
+        width = isAndroid()
                 ? Gdx.graphics.getWidth() / Gdx.graphics.getDensity()
                 : 800;
-        float height = isAndroid()
+        height = isAndroid()
                 ? Gdx.graphics.getHeight() / Gdx.graphics.getDensity()
                 : 600;
         camera = new OrthographicCamera(width, height);
@@ -71,7 +73,7 @@ public class MainGameState implements GameState {
         }
         animationProcessorService.processAnimation(gameSave, deltaTime);
         bgSpriteBatch.begin();
-        backgroundDrawer.draw(bgSpriteBatch);
+        backgroundDrawer.draw(bgSpriteBatch, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         bgSpriteBatch.end();
 
         spriteBatch.setProjectionMatrix(camera.combined);

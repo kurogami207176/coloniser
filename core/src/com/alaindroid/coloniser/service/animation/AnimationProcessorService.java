@@ -58,6 +58,9 @@ public class AnimationProcessorService {
         if (Math.abs(dy) < 5f && Math.abs(dx) < 5f) {
             unit.currentPoint(target);
             unit.targetPoints().remove(0);
+            if (unit.targetPoints().isEmpty()) {
+                unit.moving(false);
+            }
             return;
         }
         else {

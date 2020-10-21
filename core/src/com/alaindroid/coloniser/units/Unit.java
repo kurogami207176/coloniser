@@ -35,6 +35,8 @@ public class Unit {
 
     @Setter
     private boolean wobble = false;
+    @Setter
+    private boolean moving = false;
 
     public void setNextDestination(Coordinate... nextCoordinate) {
         if (coordinate != null) {
