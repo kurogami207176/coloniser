@@ -1,6 +1,5 @@
 package com.alaindroid.coloniser.service;
 
-import com.alaindroid.coloniser.draw.Point2D;
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.state.GameSave;
@@ -30,28 +29,47 @@ public class DecisionService {
         return selected;
     }
 
-    public boolean decide(Unit unit, Grid grid, Set<Coordinate> navigable, Coordinate nextCoordinate) {
+    public boolean decide(Unit unit, Grid grid, Coordinate nextCoordinate) {
+        Set<Coordinate> navigable = navigationService.navigable(unit, grid);
         if (!navigable.contains(nextCoordinate)) {
             reset();
             return false;
         }
         Coordinate[] nextCoords = findPath(unit, nextCoordinate, grid).toArray(new Coordinate[0]);
-        unit.setNextDestination(nextCoords);
-        decisionState = DecisionState.SELECTION;
-        return true;
+        if (nextCoords.length > 0) {
+            unit.setNextDestination(nextCoords);
+            decisionState = DecisionState.SELECTION;
+            return true;
+        } else {
+            System.err.println("Couldn't find path");
+            decisionState = DecisionState.SELECTION;
+            return false;
+        }
     }
 
     private List<Coordinate> findPath(Unit unit, Coordinate end, Grid grid) {
         Coordinate current = unit.coordinate();
         List<Coordinate> pathTaken = new ArrayList<>();
+        Set<Coordinate> blockSet = new HashSet<>();
         while (!current.equals(end)) {
-            current = navigationService.navigable(unit, current, grid, 1).stream()
+            Optional<Coordinate> coords = navigationService
+                    .navigable(unit, current, grid, 1)
+                    .stream()
+                    .filter(c -> !pathTaken.contains(c))
+                    .filter(c -> !blockSet.contains(c))
                     .map(n -> new CoordinateDistance(n, end))
                     .sorted(Comparator.comparing(CoordinateDistance::distance))
                     .findFirst()
-                    .map(CoordinateDistance::coordinate)
-                    .orElse(current);
-            pathTaken.add(current);
+                    .map(CoordinateDistance::coordinate);
+            if (coords.isPresent()) {
+                current = coords.get();
+                pathTaken.add(current);
+            }
+            else {
+                Coordinate blockThis = pathTaken.remove(pathTaken.size()-1);
+                blockSet.add(blockThis);
+                current = pathTaken.get(pathTaken.size() - 1);
+            }
         }
 //        return Arrays.asList(end);
         System.out.println(pathTaken);

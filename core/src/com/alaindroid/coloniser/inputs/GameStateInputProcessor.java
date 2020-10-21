@@ -10,7 +10,6 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.util.*;
@@ -25,8 +24,11 @@ public class GameStateInputProcessor implements InputProcessor {
 
     private static final float dragDrag = 0.5f;
     private boolean dragging = false;
+    private int firstPointer = 0;
     private float prevDragX = 0;
     private float prevDragY = 0;
+    private long minDragTime = 100;
+    private long touchTime = 0;
     private float maxX = 0;
     private float maxY = 0;
 
@@ -74,27 +76,32 @@ public class GameStateInputProcessor implements InputProcessor {
 
     @Override
     public boolean touchDown (int x, int y, int pointer, int button) {
-        System.out.println("touchDown (" + x + "," + y + ") p=" + pointer + ", b=" + button);
 //        handleXY(x, y);
         prevDragX = x;
         prevDragY = y;
+        firstPointer = pointer;
+        touchTime = System.currentTimeMillis();
         return false;
     }
 
     @Override
     public boolean touchUp (int x, int y, int pointer, int button) {
-        System.out.println("touchUp (" + x + "," + y + ") p=" + pointer + ", b=" + button);
         if (!dragging) {
             handleXY(x, y);
         }
         dragging = false;
+        firstPointer = 0;
+        touchTime = 0;
         return false;
     }
 
     @Override
     public boolean touchDragged (int x, int y, int pointer) {
+        if (pointer != firstPointer
+                || System.currentTimeMillis() - touchTime < minDragTime) {
+            return false;
+        }
         dragging = true;
-        System.out.println("touchDragged (" + x + "," + y + ") p=" + pointer);
 
         float deltaX = dragDrag * (prevDragX - x);
         float deltaY = dragDrag * (y - prevDragY);
@@ -106,13 +113,11 @@ public class GameStateInputProcessor implements InputProcessor {
             float deltaDelta = (absXOffset / xOffset) * (absXOffset - maxX);
             deltaX = deltaX - deltaDelta;
             xOffset = xOffset - deltaDelta;
-            System.out.println("xOffset: " + xOffset);
         }
         if (absYOffset > maxY) {
             float deltaDelta = (absYOffset / yOffset) * (absYOffset - maxY);
             deltaY = deltaY - deltaDelta;
             yOffset = yOffset - deltaDelta;
-            System.out.println("yOffset: " + yOffset);
         }
 
         camera.translate(deltaX, deltaY);
@@ -164,8 +169,7 @@ public class GameStateInputProcessor implements InputProcessor {
             decisionService.select(gameSave, unitOptional.get());
         } else if (decisionService.isWaitingForDecision()) {
             Unit wobblingUnit = gameSave.findWobblingUnit();
-            Set<Coordinate> navigable = navigationService.navigable(wobblingUnit, gameSave.grid());
-            decisionService.decide(wobblingUnit, gameSave.grid(), navigable, coordinate);
+            decisionService.decide(wobblingUnit, gameSave.grid(), coordinate);
             gameSave.postDecisionReset();
         }
 

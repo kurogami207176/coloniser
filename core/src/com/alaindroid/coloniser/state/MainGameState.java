@@ -12,6 +12,7 @@ import com.alaindroid.coloniser.service.generator.GridGeneratorService;
 import com.alaindroid.coloniser.service.generator.UnitGenerator;
 import com.alaindroid.coloniser.service.grid.CellGeneratorService;
 import com.alaindroid.coloniser.units.Unit;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -45,7 +46,13 @@ public class MainGameState implements GameState {
         shapeRenderer = new ShapeRenderer();
         spriteBatch = new SpriteBatch();
         bgSpriteBatch = new SpriteBatch();
-        camera = new OrthographicCamera(800, 600);
+        float width = isAndroid()
+                ? Gdx.graphics.getWidth() / Gdx.graphics.getDensity()
+                : 800;
+        float height = isAndroid()
+                ? Gdx.graphics.getHeight() / Gdx.graphics.getDensity()
+                : 600;
+        camera = new OrthographicCamera(width, height);
 
         Grid grid = gridGeneratorService.generateGrid(10, cellGeneratorService, 38);
         List<Unit> units = unitGenerator.generate(grid, 3, 3);
@@ -79,6 +86,10 @@ public class MainGameState implements GameState {
     public void onDispose() {
         spriteDrawer.dispose();
         backgroundDrawer.dispose();
+    }
+
+    private boolean isAndroid() {
+        return Gdx.app.getType().equals(Application.ApplicationType.Android);
     }
 
 }
