@@ -7,6 +7,8 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @ToString
 @Getter
@@ -29,30 +31,29 @@ public class Unit {
     @Setter
     private Point2D currentPoint;
     @Setter
-    private Point2D targetPoint;
+    private List<Point2D> targetPoints;
 
     @Setter
     private boolean wobble = false;
 
-    public void setNextDestination(Coordinate nextCoordinate) {
+    public void setNextDestination(Coordinate... nextCoordinate) {
         if (coordinate != null) {
             this.currentPoint = this.coordinate.point().get(0);
         }
         else {
-            this.coordinate = nextCoordinate;
+            this.coordinate = nextCoordinate[0];
         }
-        this.targetPoint = nextCoordinate.point().get(0);
-        this.coordinate = nextCoordinate;
+        this.targetPoints = Stream.of(nextCoordinate)
+                .map(Coordinate::point)
+                .map(p -> p.get(0))
+                .collect(Collectors.toList());
+        this.coordinate = nextCoordinate[0];
     }
 
     public Point2D currentPoint() {
         return currentPoint == null
                 ? coordinate.point().get(0)
                 : currentPoint;
-    }
-
-    public boolean traversable(TileType tileType) {
-        return traversable.contains(tileType);
     }
 
     public int healthLevel() {

@@ -9,13 +9,13 @@ import com.alaindroid.coloniser.units.Unit;
 import java.util.List;
 
 public class AnimationProcessorService {
-    private static final float popReductionSpeed = 100f;
-    private static final float popHeight = 30f;
+    private static final float popReductionSpeed = 200f;
+    private static final float popHeight = 10f;
 
     private static final float wobbleSpeed = 250f;
     private static final float maxWobbleAngle = 15f;
 
-    private static final float unitMoveSpeed = 150f;
+    private static final float unitMoveSpeed = 200f;
 
     public void processAnimation(GameSave gameSave, float deltaTime) {
         processAnimation(gameSave.grid(), deltaTime);
@@ -49,11 +49,15 @@ public class AnimationProcessorService {
 
     private void processUnitMove(Unit unit, float deltaTime) {
         Point2D current = unit.currentPoint();
-        Point2D target = unit.targetPoint();
+        if (unit.targetPoints() == null || unit.targetPoints().isEmpty()) {
+            return;
+        }
+        Point2D target = unit.targetPoints().get(0);
         float dy = target.y() - current.y();
         float dx = target.x() - current.x();
         if (Math.abs(dy) < 1f && Math.abs(dx) < 1f) {
             unit.currentPoint(target);
+            unit.targetPoints().remove(0);
             return;
         }
         else {

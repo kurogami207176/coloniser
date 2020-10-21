@@ -24,15 +24,7 @@ public class CoordinateUtil {
     }
 
     public static Predicate<Coordinate> navigable(Unit unit, Grid grid) {
-        return coordinate -> {
-            HexCell hexCell = grid.cell(coordinate);
-            if(hexCell == null) {
-                System.err.println("Coords available: ");
-                grid.cells().keySet().forEach(System.err::println);
-                throw new IllegalStateException("Couldnt find cell for " + coordinate);
-            }
-            return unit.traversable(hexCell.tileType());
-        };
+        return coordinate -> unit.traversable().contains(grid.cell(coordinate).tileType());
     }
 
 }

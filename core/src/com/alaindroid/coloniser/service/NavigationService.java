@@ -14,12 +14,14 @@ public class NavigationService {
         Set<Coordinate> navigable = new HashSet<>();
         navigable.add(unit.coordinate());
         for (int i = 0; i < unit.unitType().range(); i++) {
-            navigable = navigable.stream()
+            navigable.addAll(navigable.stream()
                     .map(c -> grid.neighbors(c))
                     .flatMap(Set::stream)
                     .filter(CoordinateUtil.navigable(unit, grid))
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toSet())
+            );
         }
+        navigable.remove(unit.coordinate());
         return navigable;
     }
 }
