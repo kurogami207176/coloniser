@@ -6,12 +6,15 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Accessors(fluent = true)
 public class GameSave {
     private final Grid grid;
     private final List<Unit> units;
+
+    private final Set<Player> players;
 
     public Unit findWobblingUnit() {
         return units.stream().filter(Unit::wobble).findFirst().orElse(null);

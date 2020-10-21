@@ -50,18 +50,21 @@ public class AnimationProcessorService {
     private void processUnitMove(Unit unit, float deltaTime) {
         Point2D current = unit.currentPoint();
         Point2D target = unit.targetPoint();
-        boolean xPos = target.x() > current.x();
-        boolean yPos = target.y() > current.y();
+        float dy = target.y() - current.y();
+        float dx = target.x() - current.x();
+        if (Math.abs(dy) < 1f && Math.abs(dx) < 1f) {
+            unit.currentPoint(target);
+            return;
+        }
+        else {
+            double adj = Math.atan2(dy, dx);
+            float deltaX = (float) Math.cos(adj) * deltaTime * unitMoveSpeed;
+            float deltaY = (float) Math.sin(adj) * deltaTime * unitMoveSpeed;
+            float newX = current.x() + deltaX;
+            float newY = current.y() + deltaY;
+            unit.currentPoint(new Point2D(newX, newY));
+        }
 
-        float slope = Math.abs(target.y() - current.x() / target.x() - current.x());
-        float newX = xPos
-                ? Math.min(target.x(), current.x() + deltaTime * unitMoveSpeed)
-                : Math.max(target.x(), current.x() - deltaTime * unitMoveSpeed);
-        float newY = yPos
-                ? Math.min(target.y(), current.y() + deltaTime * unitMoveSpeed)
-                : Math.max(target.y(), current.y() - deltaTime * unitMoveSpeed);
-
-        unit.currentPoint(new Point2D(newX, newY));
     }
 
     private void processWobble(Unit unit, float deltaTime) {

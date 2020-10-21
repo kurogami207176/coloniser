@@ -18,7 +18,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class MainGameState implements GameState {
@@ -47,7 +49,8 @@ public class MainGameState implements GameState {
 
         Grid grid = gridGeneratorService.generateGrid(10, cellGeneratorService, 38);
         List<Unit> units = unitGenerator.generate(grid, 3, 3);
-        gameSave = new GameSave(grid, units);
+        Set<Player> players = new HashSet<>();
+        gameSave = new GameSave(grid, units, players);
         backgroundDrawer.create();
         spriteDrawer.create();
 
