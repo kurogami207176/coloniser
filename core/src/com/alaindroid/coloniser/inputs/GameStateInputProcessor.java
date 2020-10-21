@@ -9,20 +9,50 @@ import com.alaindroid.coloniser.units.Unit;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
-@AllArgsConstructor
 public class GameStateInputProcessor implements InputProcessor {
-    private OrthographicCamera camera;
-    private GameSave gameSave;
-    private DecisionService decisionService;
-    private NavigationService navigationService;
+    private final OrthographicCamera camera;
+    private final GameSave gameSave;
+    private final DecisionService decisionService;
+    private final NavigationService navigationService;
+
+    private static final float dragDrag = 0.5f;
+    private boolean dragging = false;
+    private float prevDragX = 0;
+    private float prevDragY = 0;
+    private float maxX = 0;
+    private float maxY = 0;
+
+    private float xOffset = 0;
+    private float yOffset = 0;
+
+    public GameStateInputProcessor(OrthographicCamera camera, GameSave gameSave,
+                                   DecisionService decisionService, NavigationService navigationService) {
+        this.camera = camera;
+        this.gameSave = gameSave;
+        this.decisionService = decisionService;
+        this.navigationService = navigationService;
+        setBounds(gameSave);
+    }
+
+    private void setBounds(GameSave gameSave) {
+        List<Point2D> points = gameSave.grid().cells().keySet()
+                .stream()
+                .map(Coordinate::point)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        Supplier thrower = () -> new RuntimeException("Failures!");
+        maxX = points.stream().map(Point2D::x).max(Float::compareTo).orElseThrow(thrower);
+        maxY = points.stream().map(Point2D::x).max(Float::compareTo).orElseThrow(thrower);
+
+    }
 
     @Override
     public boolean keyDown (int keycode) {
@@ -46,20 +76,50 @@ public class GameStateInputProcessor implements InputProcessor {
     public boolean touchDown (int x, int y, int pointer, int button) {
         System.out.println("touchDown (" + x + "," + y + ") p=" + pointer + ", b=" + button);
 //        handleXY(x, y);
+        prevDragX = x;
+        prevDragY = y;
         return false;
     }
 
     @Override
     public boolean touchUp (int x, int y, int pointer, int button) {
         System.out.println("touchUp (" + x + "," + y + ") p=" + pointer + ", b=" + button);
-        handleXY(x, y);
+        if (!dragging) {
+            handleXY(x, y);
+        }
+        dragging = false;
         return false;
     }
 
     @Override
     public boolean touchDragged (int x, int y, int pointer) {
+        dragging = true;
         System.out.println("touchDragged (" + x + "," + y + ") p=" + pointer);
-//        handleXY(x, y);
+
+        float deltaX = dragDrag * (prevDragX - x);
+        float deltaY = dragDrag * (y - prevDragY);
+        xOffset = xOffset + deltaX;
+        yOffset = yOffset + deltaY;
+        float absXOffset = Math.abs(xOffset);
+        float absYOffset = Math.abs(yOffset);
+        if (absXOffset > maxX) {
+            float deltaDelta = (absXOffset / xOffset) * (absXOffset - maxX);
+            deltaX = deltaX - deltaDelta;
+            xOffset = xOffset - deltaDelta;
+            System.out.println("xOffset: " + xOffset);
+        }
+        if (absYOffset > maxY) {
+            float deltaDelta = (absYOffset / yOffset) * (absYOffset - maxY);
+            deltaY = deltaY - deltaDelta;
+            yOffset = yOffset - deltaDelta;
+            System.out.println("yOffset: " + yOffset);
+        }
+
+        camera.translate(deltaX, deltaY);
+        camera.update();
+
+        prevDragX = x;
+        prevDragY = y;
         return false;
     }
 
