@@ -18,8 +18,8 @@ public class ServiceModule {
 
     @Provides
     @Singleton
-    public DecisionService decisionService() {
-        return new DecisionService();
+    public DecisionService decisionService(NavigationService navigationService) {
+        return new DecisionService(navigationService);
     }
 
     @Provides

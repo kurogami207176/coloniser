@@ -16,7 +16,7 @@ public abstract class ShipUnit extends Unit{
 
     public ShipUnit(UnitType unitType) {
         super(unitType);
-        traversalSpeed().put(TileType.WATER, 2f);
+        traversable().add(TileType.WATER);
     }
 
     public static ShipUnit random() {

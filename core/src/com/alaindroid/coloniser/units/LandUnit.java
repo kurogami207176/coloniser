@@ -14,13 +14,13 @@ public abstract class LandUnit extends Unit {
     };
     public LandUnit(UnitType unitType) {
         super(unitType);
-        traversalSpeed().put(TileType.GRASS, 1f);
-        traversalSpeed().put(TileType.DIRT, 1f);
-        traversalSpeed().put(TileType.SAND, 0.5f);
-        traversalSpeed().put(TileType.SNOW, 0.2f);
-        traversalSpeed().put(TileType.AUTUMN, 1f);
-        traversalSpeed().put(TileType.ROCK, 0.1f);
-        traversalSpeed().put(TileType.STONE, 0.2f);
+        traversable().add(TileType.GRASS);
+        traversable().add(TileType.DIRT);
+        traversable().add(TileType.SAND);
+        traversable().add(TileType.SNOW);
+        traversable().add(TileType.AUTUMN);
+        traversable().add(TileType.ROCK);
+        traversable().add(TileType.STONE);
     }
 
     public static LandUnit random() {

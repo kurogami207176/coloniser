@@ -31,8 +31,7 @@ public class CoordinateUtil {
                 grid.cells().keySet().forEach(System.err::println);
                 throw new IllegalStateException("Couldnt find cell for " + coordinate);
             }
-            Float travereSpeed = unit.traversalSpeed(hexCell.tileType()).orElse(0f);
-            return travereSpeed > 0;
+            return unit.traversable(hexCell.tileType());
         };
     }
 

@@ -165,7 +165,7 @@ public class GameStateInputProcessor implements InputProcessor {
         } else if (decisionService.isWaitingForDecision()) {
             Unit wobblingUnit = gameSave.findWobblingUnit();
             Set<Coordinate> navigable = navigationService.navigable(wobblingUnit, gameSave.grid());
-            decisionService.decide(wobblingUnit, gameSave.grid(), navigable, coordinate);
+            decisionService.decide(wobblingUnit, navigable, coordinate);
             gameSave.postDecisionReset();
         }
 

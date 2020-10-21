@@ -6,10 +6,7 @@ import com.alaindroid.coloniser.grid.TileType;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @ToString
 @Getter
@@ -20,7 +17,7 @@ public class Unit {
     @EqualsAndHashCode.Include
     private final String id = UUID.randomUUID().toString();
     private final UnitType unitType;
-    private final Map<TileType, Float> traversalSpeed = new HashMap<>();
+    private final Set<TileType> traversable = new HashSet<>();
     private Coordinate coordinate;
     private float maxHealth = 100;
     private float currHealth = 100;
@@ -54,8 +51,8 @@ public class Unit {
                 : currentPoint;
     }
 
-    public Optional<Float> traversalSpeed(TileType tileType) {
-        return Optional.ofNullable(traversalSpeed.get(tileType));
+    public boolean traversable(TileType tileType) {
+        return traversable.contains(tileType);
     }
 
     public int healthLevel() {
