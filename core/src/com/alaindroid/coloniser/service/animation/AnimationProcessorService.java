@@ -55,7 +55,7 @@ public class AnimationProcessorService {
         Point2D target = unit.targetPoints().get(0);
         float dy = target.y() - current.y();
         float dx = target.x() - current.x();
-        if (Math.abs(dy) < 1f && Math.abs(dx) < 1f) {
+        if (Math.abs(dy) < 5f && Math.abs(dx) < 5f) {
             unit.currentPoint(target);
             unit.targetPoints().remove(0);
             return;

@@ -11,9 +11,17 @@ import java.util.stream.Collectors;
 
 public class NavigationService {
     public Set<Coordinate> navigable(Unit unit, Grid grid) {
+        return navigable(unit, grid, unit.unitType().range());
+    }
+
+    public Set<Coordinate> navigable(Unit unit, Grid grid, int range) {
+        return navigable(unit, unit.coordinate(), grid, range);
+    }
+
+    public Set<Coordinate> navigable(Unit unit, Coordinate coordinate, Grid grid, int range) {
         Set<Coordinate> navigable = new HashSet<>();
-        navigable.add(unit.coordinate());
-        for (int i = 0; i < unit.unitType().range(); i++) {
+        navigable.add(coordinate);
+        for (int i = 0; i < range; i++) {
             navigable.addAll(navigable.stream()
                     .map(c -> grid.neighbors(c))
                     .flatMap(Set::stream)
@@ -21,7 +29,7 @@ public class NavigationService {
                     .collect(Collectors.toSet())
             );
         }
-        navigable.remove(unit.coordinate());
+        navigable.remove(coordinate);
         return navigable;
     }
 }

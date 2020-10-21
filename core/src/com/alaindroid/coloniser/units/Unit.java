@@ -41,13 +41,13 @@ public class Unit {
             this.currentPoint = this.coordinate.point().get(0);
         }
         else {
-            this.coordinate = nextCoordinate[0];
+            this.coordinate = nextCoordinate[nextCoordinate.length - 1];
         }
         this.targetPoints = Stream.of(nextCoordinate)
                 .map(Coordinate::point)
                 .map(p -> p.get(0))
                 .collect(Collectors.toList());
-        this.coordinate = nextCoordinate[0];
+        this.coordinate = nextCoordinate[nextCoordinate.length - 1];
     }
 
     public Point2D currentPoint() {
