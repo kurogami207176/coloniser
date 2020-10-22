@@ -4,7 +4,6 @@ import com.alaindroid.coloniser.draw.BackgroundDrawer;
 import com.alaindroid.coloniser.draw.SpriteDrawer;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.inputs.GameControllerListener;
-import com.alaindroid.coloniser.inputs.GameStateInputProcessor;
 import com.alaindroid.coloniser.service.DecisionService;
 import com.alaindroid.coloniser.service.GamespeedService;
 import com.alaindroid.coloniser.service.NavigationService;
