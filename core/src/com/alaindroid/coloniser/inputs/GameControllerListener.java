@@ -6,36 +6,32 @@ import com.alaindroid.coloniser.service.DecisionService;
 import com.alaindroid.coloniser.service.NavigationService;
 import com.alaindroid.coloniser.state.GameSave;
 import com.alaindroid.coloniser.units.Unit;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class GameStateInputProcessor implements InputProcessor {
+public class GameControllerListener implements GestureDetector.GestureListener {
     private final OrthographicCamera camera;
     private final GameSave gameSave;
     private final DecisionService decisionService;
     private final NavigationService navigationService;
-
-    private static final float dragDrag = 0.5f;
-    private boolean dragging = false;
-    private int firstPointer = 0;
-    private float prevDragX = 0;
-    private float prevDragY = 0;
-    private long minDragTime = 100;
-    private long touchTime = 0;
 
     private float maxX = 0;
     private float maxY = 0;
     private float xOffset = 0;
     private float yOffset = 0;
 
-    public GameStateInputProcessor(OrthographicCamera camera, GameSave gameSave,
+    public GameControllerListener(OrthographicCamera camera, GameSave gameSave,
                                    DecisionService decisionService, NavigationService navigationService) {
         this.camera = camera;
         this.gameSave = gameSave;
@@ -44,67 +40,29 @@ public class GameStateInputProcessor implements InputProcessor {
         setBounds(gameSave);
     }
 
-    private void setBounds(GameSave gameSave) {
-        List<Point2D> points = gameSave.grid().cells().keySet()
-                .stream()
-                .map(Coordinate::point)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-        Supplier thrower = () -> new RuntimeException("Failures!");
-        maxX = points.stream().map(Point2D::x).max(Float::compareTo).orElseThrow(thrower);
-        maxY = points.stream().map(Point2D::x).max(Float::compareTo).orElseThrow(thrower);
-
-    }
-
     @Override
-    public boolean keyDown (int keycode) {
-//        System.out.println("keyDown (" + keycode + ")");
+    public boolean touchDown(float x, float y, int pointer, int button) {
         return false;
     }
 
     @Override
-    public boolean keyUp (int keycode) {
-//        System.out.println("keyUp (" + keycode + ")");
+    public boolean tap(float x, float y, int count, int button) {
+        handleXY(x, y);
         return false;
     }
 
     @Override
-    public boolean keyTyped (char character) {
-//        System.out.println("keyTyped (" + character + ")");
+    public boolean longPress(float x, float y) {
         return false;
     }
 
     @Override
-    public boolean touchDown (int x, int y, int pointer, int button) {
-//        handleXY(x, y);
-        prevDragX = x;
-        prevDragY = y;
-        firstPointer = pointer;
-        touchTime = System.currentTimeMillis();
+    public boolean fling(float velocityX, float velocityY, int button) {
         return false;
     }
 
     @Override
-    public boolean touchUp (int x, int y, int pointer, int button) {
-        if (!dragging) {
-            handleXY(x, y);
-        }
-        dragging = false;
-        firstPointer = 0;
-        touchTime = 0;
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged (int x, int y, int pointer) {
-        if (pointer != firstPointer
-                || System.currentTimeMillis() - touchTime < minDragTime) {
-            return false;
-        }
-        dragging = true;
-
-        float deltaX = dragDrag * (prevDragX - x);
-        float deltaY = dragDrag * (y - prevDragY);
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
         xOffset = xOffset + deltaX;
         yOffset = yOffset + deltaY;
         float absXOffset = Math.abs(xOffset);
@@ -120,37 +78,42 @@ public class GameStateInputProcessor implements InputProcessor {
             yOffset = yOffset - deltaDelta;
         }
 
-        camera.translate(deltaX, deltaY);
+        camera.translate(-deltaX, deltaY);
         camera.update();
 
-        prevDragX = x;
-        prevDragY = y;
         return false;
     }
 
     @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-//        System.out.println("mouseMoved (" + screenX + "," + screenY + ")");
+    public boolean panStop(float x, float y, int pointer, int button) {
         return false;
     }
 
     @Override
-    public boolean scrolled (int amount) {
-//        System.out.println("scrolled (" + amount + ")");
+    public boolean zoom(float initialDistance, float distance) {
         return false;
     }
 
-    private Optional<Coordinate> findCoordinates(float screenX, float screenY) {
-        Vector3 gameWorldVector = camera.unproject(new Vector3(screenX, screenY, 0));
-        return gameSave.grid().cells().keySet().stream()
-                .map(c -> new Distance(c, gameWorldVector))
-                .sorted(Comparator.comparing(Distance::distance))
-                .findFirst()
-                .map(Distance::coordinate);
+    @Override
+    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+        return false;
     }
 
-    private Optional<Unit> findUnit(Coordinate coordinate) {
-        return gameSave.units().stream().filter(u -> u.coordinate().equals(coordinate)).findFirst();
+    @Override
+    public void pinchStop() {
+
+    }
+
+    private void setBounds(GameSave gameSave) {
+        List<Point2D> points = gameSave.grid().cells().keySet()
+                .stream()
+                .map(Coordinate::point)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        Supplier thrower = () -> new RuntimeException("Failures!");
+        maxX = points.stream().map(Point2D::x).max(Float::compareTo).orElseThrow(thrower);
+        maxY = points.stream().map(Point2D::x).max(Float::compareTo).orElseThrow(thrower);
+
     }
 
     private boolean handleXY(float screenX, float screenY) {
@@ -176,6 +139,19 @@ public class GameStateInputProcessor implements InputProcessor {
         return false;
     }
 
+    private Optional<Coordinate> findCoordinates(float screenX, float screenY) {
+        Vector3 gameWorldVector = camera.unproject(new Vector3(screenX, screenY, 0));
+        return gameSave.grid().cells().keySet().stream()
+                .map(c -> new Distance(c, gameWorldVector))
+                .sorted(Comparator.comparing(Distance::distance))
+                .findFirst()
+                .map(Distance::coordinate);
+    }
+
+    private Optional<Unit> findUnit(Coordinate coordinate) {
+        return gameSave.units().stream().filter(u -> u.coordinate().equals(coordinate)).findFirst();
+    }
+
     @Data
     @Accessors(fluent = true)
     private static class Distance {
@@ -187,4 +163,5 @@ public class GameStateInputProcessor implements InputProcessor {
             this.distance = vector.dst(new Vector3(point2D.x(), point2D.y(), vector.z));
         }
     }
+
 }

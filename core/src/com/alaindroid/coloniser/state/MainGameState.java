@@ -3,6 +3,7 @@ package com.alaindroid.coloniser.state;
 import com.alaindroid.coloniser.draw.BackgroundDrawer;
 import com.alaindroid.coloniser.draw.SpriteDrawer;
 import com.alaindroid.coloniser.grid.Grid;
+import com.alaindroid.coloniser.inputs.GameControllerListener;
 import com.alaindroid.coloniser.inputs.GameStateInputProcessor;
 import com.alaindroid.coloniser.service.DecisionService;
 import com.alaindroid.coloniser.service.GamespeedService;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.input.GestureDetector;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
@@ -63,7 +65,8 @@ public class MainGameState implements GameState {
         backgroundDrawer.create();
         spriteDrawer.create();
 
-        Gdx.input.setInputProcessor(new GameStateInputProcessor(camera, gameSave, decisionService, navigationService));
+//        Gdx.input.setInputProcessor(new GameStateInputProcessor(camera, gameSave, decisionService, navigationService));
+        Gdx.input.setInputProcessor(new GestureDetector(new GameControllerListener(camera, gameSave, decisionService, navigationService)));
     }
 
     @Override
