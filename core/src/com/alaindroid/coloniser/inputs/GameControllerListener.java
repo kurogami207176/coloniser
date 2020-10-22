@@ -142,7 +142,7 @@ public class GameControllerListener implements GestureDetector.GestureListener {
             decisionService.select(gameSave, unitOptional.get());
         } else if (decisionService.isWaitingForDecision()) {
             Unit wobblingUnit = gameSave.findWobblingUnit();
-            decisionService.decide(wobblingUnit, gameSave.grid(), coordinate);
+            decisionService.decide(gameSave.currentPlayer(), wobblingUnit, gameSave.grid(), coordinate);
             gameSave.postDecisionReset();
         }
 

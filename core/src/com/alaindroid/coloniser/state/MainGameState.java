@@ -7,6 +7,7 @@ import com.alaindroid.coloniser.inputs.GameControllerListener;
 import com.alaindroid.coloniser.service.DecisionService;
 import com.alaindroid.coloniser.service.GamespeedService;
 import com.alaindroid.coloniser.service.NavigationService;
+import com.alaindroid.coloniser.service.PlayerViewFilterService;
 import com.alaindroid.coloniser.service.animation.AnimationProcessorService;
 import com.alaindroid.coloniser.service.generator.GridGeneratorService;
 import com.alaindroid.coloniser.service.generator.UnitGenerator;
@@ -36,6 +37,7 @@ public class MainGameState implements GameState {
     final DecisionService decisionService;
     final GamespeedService gamespeedService;
     final AnimationProcessorService animationProcessorService;
+    final PlayerViewFilterService playerViewFilterService;
 
     OrthographicCamera camera;
     ShapeRenderer shapeRenderer;
@@ -54,10 +56,10 @@ public class MainGameState implements GameState {
         bgSpriteBatch = new SpriteBatch();
         width = isAndroid()
                 ? Gdx.graphics.getWidth() / Gdx.graphics.getDensity()
-                : 800;
+                : 1280;
         height = isAndroid()
                 ? Gdx.graphics.getHeight() / Gdx.graphics.getDensity()
-                : 600;
+                : 960;
         camera = new OrthographicCamera(width, height);
 
         Grid grid = gridGeneratorService.generateGrid(10, cellGeneratorService, 38);
@@ -79,6 +81,7 @@ public class MainGameState implements GameState {
         }
 
         gameSave = new GameSave(grid, units, players);
+        gameSave.currentPlayer(player1);
         backgroundDrawer.create();
         spriteDrawer.create();
 
@@ -99,7 +102,7 @@ public class MainGameState implements GameState {
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
 
-        spriteDrawer.draw(spriteBatch, gameSave);
+        spriteDrawer.draw(spriteBatch, playerViewFilterService.filterGameSave(gameSave));
 
         spriteBatch.end();
     }

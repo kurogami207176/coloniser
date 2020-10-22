@@ -32,4 +32,17 @@ public class NavigationService {
         navigable.remove(coordinate);
         return navigable;
     }
+
+    public Set<Coordinate> visible(Coordinate coordinate, Grid grid, int range) {
+        Set<Coordinate> navigable = new HashSet<>();
+        navigable.add(coordinate);
+        for (int i = 0; i < range; i++) {
+            navigable.addAll(navigable.stream()
+                    .map(c -> grid.neighbors(c))
+                    .flatMap(Set::stream)
+                    .collect(Collectors.toSet())
+            );
+        }
+        return navigable;
+    }
 }

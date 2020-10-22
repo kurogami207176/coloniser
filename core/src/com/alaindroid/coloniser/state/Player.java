@@ -4,6 +4,7 @@ import com.alaindroid.coloniser.grid.Coordinate;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -20,7 +21,7 @@ public class Player {
     private int turnLeft;
     private int maxTurns;
 
-    private Set<Coordinate> seenCoordinates;
+    private Set<Coordinate> seenCoordinates = new HashSet<>();
 
     enum Color {
         GREEN, RED

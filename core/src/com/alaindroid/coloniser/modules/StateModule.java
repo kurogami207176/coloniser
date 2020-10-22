@@ -5,6 +5,7 @@ import com.alaindroid.coloniser.draw.SpriteDrawer;
 import com.alaindroid.coloniser.service.DecisionService;
 import com.alaindroid.coloniser.service.GamespeedService;
 import com.alaindroid.coloniser.service.NavigationService;
+import com.alaindroid.coloniser.service.PlayerViewFilterService;
 import com.alaindroid.coloniser.service.animation.AnimationProcessorService;
 import com.alaindroid.coloniser.service.generator.GridGeneratorService;
 import com.alaindroid.coloniser.service.generator.UnitGenerator;
@@ -28,8 +29,10 @@ public class StateModule {
                                        NavigationService navigationService,
                                        DecisionService decisionService,
                                        GamespeedService gamespeedService,
-                                       AnimationProcessorService animationProcessorService) {
+                                       AnimationProcessorService animationProcessorService,
+                                       PlayerViewFilterService playerViewFilterService) {
         return new MainGameState(spriteDrawer, backgroundDrawer, gridGeneratorService, unitGenerator,
-                cellGeneratorService, navigationService, decisionService, gamespeedService, animationProcessorService);
+                cellGeneratorService, navigationService, decisionService, gamespeedService, animationProcessorService,
+                playerViewFilterService);
     }
 }

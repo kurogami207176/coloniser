@@ -1,9 +1,6 @@
 package com.alaindroid.coloniser.modules;
 
-import com.alaindroid.coloniser.service.DecisionService;
-import com.alaindroid.coloniser.service.GamespeedService;
-import com.alaindroid.coloniser.service.NavigationService;
-import com.alaindroid.coloniser.service.PathFinderService;
+import com.alaindroid.coloniser.service.*;
 import dagger.Module;
 import dagger.Provides;
 
@@ -27,6 +24,12 @@ public class ServiceModule {
     @Singleton
     public PathFinderService pathFinderService(NavigationService navigationService) {
         return new PathFinderService(navigationService);
+    }
+
+    @Provides
+    @Singleton
+    public PlayerViewFilterService playerViewFilterService(NavigationService navigationService) {
+        return new PlayerViewFilterService(navigationService);
     }
 
     @Provides

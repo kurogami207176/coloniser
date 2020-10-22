@@ -15,6 +15,7 @@ public class GameSave {
     private final List<Unit> units;
 
     private final Set<Player> players;
+    private Player currentPlayer;
 
     public Unit findWobblingUnit() {
         return units.stream().filter(Unit::wobble).findFirst().orElse(null);
