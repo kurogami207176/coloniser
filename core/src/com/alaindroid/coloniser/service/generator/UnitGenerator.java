@@ -1,6 +1,7 @@
 package com.alaindroid.coloniser.service.generator;
 
 import com.alaindroid.coloniser.grid.Grid;
+import com.alaindroid.coloniser.state.Player;
 import com.alaindroid.coloniser.units.LandUnit;
 import com.alaindroid.coloniser.units.ShipUnit;
 import com.alaindroid.coloniser.units.Unit;
@@ -14,7 +15,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class UnitGenerator {
-    public List<Unit> generate(Grid grid, int ship, int land) {
+    public List<Unit> generate(Player player, int ship, int land) {
         List<Unit> gens =  Stream.of(
                 IntStream.range(0, ship)
                         .mapToObj(i -> ShipUnit.random()),
@@ -22,15 +23,13 @@ public class UnitGenerator {
                         .mapToObj(i -> LandUnit.random()))
                 .flatMap(Function.identity())
                 .collect(Collectors.toList());
-        for(Unit unit:  gens) {
-            setCoordinate(unit, grid, gens);
+        for(Unit unit: gens) {
+            unit.player(player);
         }
-        System.out.println("Generated units: ");
-        gens.forEach(System.out::println);
         return gens;
     }
 
-    private void setCoordinate(Unit unit, Grid grid, List<Unit> unitsSoFar) {
+    public void randomCoordinate(Unit unit, Grid grid, List<Unit> unitsSoFar) {
         grid.cells().keySet().stream()
                 .filter(CoordinateUtil.navigable(unit, grid))
                 .filter(coordinate -> unitsSoFar.stream().map(Unit::coordinate).filter(Objects::nonNull).noneMatch(coordinate::equals))

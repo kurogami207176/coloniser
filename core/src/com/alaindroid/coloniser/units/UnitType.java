@@ -8,19 +8,15 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @AllArgsConstructor
 public enum UnitType {
-    LAND(0, 0),
-    TANKS_DESERT(5, 2),
-    TANKS_GREEN(5, 2),
-    TANKS_GREY(5, 2),
-    TANKS_NAVY(5, 2),
-    SHIP(0, 0),
-    SHIP_CROSS(4,4),
-    SHIP_GOLD(4, 4),
-    SHIP_NEUTRAL(4, 4),
-    SHIP_PIRATE(4, 4),
-    SHIP_SPEED(4, 4),
-    SHIP_SWORD(4, 4);
+    LAND_ATTACK(0, 5,2),
+    LAND_SPEED( 0, 1, 4),
+    LAND_LARGE(0, 3, 2),
+    SHIP_ATTACK(1, 5, 3),
+    SHIP_SPEED(1, 1, 6),
+    SHIP_LARGE(3, 1, 3)
+    ;
 
-    private int levels;
+    private int capacity;
+    private int strength;
     private int range;
 }

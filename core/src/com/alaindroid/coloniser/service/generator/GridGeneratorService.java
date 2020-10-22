@@ -44,7 +44,6 @@ public class GridGeneratorService {
     }
 
     public Set<Coordinate> generateNeighbors(Coordinate origin, float s) {
-        System.out.println("generateNeighbors: " + origin);
         Set<Coordinate> coordinates = new HashSet<>();
         coordinates.add(coordOffset(origin, 1, 0, -1, s));
         coordinates.add(coordOffset(origin, 1, -1, 0, s));

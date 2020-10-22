@@ -20,6 +20,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,6 +44,8 @@ public class MainGameState implements GameState {
     GameSave gameSave;
     float width;
     float height;
+    Player player1;
+    Player player2;
 
     @Override
     public void onCreate() {
@@ -58,8 +61,23 @@ public class MainGameState implements GameState {
         camera = new OrthographicCamera(width, height);
 
         Grid grid = gridGeneratorService.generateGrid(10, cellGeneratorService, 38);
-        List<Unit> units = unitGenerator.generate(grid, 3, 3);
+
         Set<Player> players = new HashSet<>();
+        player1 = new Player(Player.Color.RED);
+        player2 = new Player(Player.Color.GREEN);
+        players.add(player1);
+        players.add(player2);
+
+        List<Unit> units1 = unitGenerator.generate(player1, 3, 3);
+        List<Unit> units2 = unitGenerator.generate(player2, 3, 3);
+
+        List<Unit> units = new ArrayList<>();
+        units.addAll(units1);
+        units.addAll(units2);
+        for(Unit unit: units) {
+            unitGenerator.randomCoordinate(unit, grid, units);
+        }
+
         gameSave = new GameSave(grid, units, players);
         backgroundDrawer.create();
         spriteDrawer.create();

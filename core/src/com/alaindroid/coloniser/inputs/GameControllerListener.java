@@ -31,6 +31,9 @@ public class GameControllerListener implements GestureDetector.GestureListener {
     private float xOffset = 0;
     private float yOffset = 0;
 
+    private float maxZoom = 4f;
+    private float minZoom = 0.4f;
+
     public GameControllerListener(OrthographicCamera camera, GameSave gameSave,
                                    DecisionService decisionService, NavigationService navigationService) {
         this.camera = camera;
@@ -91,6 +94,13 @@ public class GameControllerListener implements GestureDetector.GestureListener {
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
+        System.out.println("initialDistance: " + initialDistance);
+        System.out.println("distance: " + distance);
+        System.out.println("zoom: " + camera.zoom);
+        float diff = distance - initialDistance;
+        float zoomLevel = camera.zoom - diff * 0.0005f;
+        camera.zoom = Math.min(maxZoom, Math.max(minZoom, zoomLevel));
+        camera.update();
         return false;
     }
 

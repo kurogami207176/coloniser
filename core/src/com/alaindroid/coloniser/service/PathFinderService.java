@@ -46,8 +46,6 @@ public class PathFinderService {
                 current = pathTaken.get(pathTaken.size() - 1);
             }
         }
-//        return Arrays.asList(end);
-        System.out.println(pathTaken);
         return pathTaken;
     }
 

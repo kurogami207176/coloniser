@@ -3,10 +3,14 @@ package com.alaindroid.coloniser.units;
 import com.alaindroid.coloniser.draw.Point2D;
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.TileType;
+import com.alaindroid.coloniser.state.Player;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,6 +36,8 @@ public class Unit {
     private Point2D currentPoint;
     @Setter
     private List<Point2D> targetPoints;
+    @Setter
+    private Player player;
 
     @Setter
     private boolean wobble = false;
@@ -56,11 +62,5 @@ public class Unit {
         return currentPoint == null
                 ? coordinate.point().get(0)
                 : currentPoint;
-    }
-
-    public int healthLevel() {
-        float percent = (float) unitType.levels() * currHealth / maxHealth;
-        float level = Math.max(unitType.levels()-1, Math.min(0, percent));
-        return (int) level;
     }
 }

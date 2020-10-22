@@ -6,11 +6,10 @@ import java.util.Random;
 
 public abstract class LandUnit extends Unit {
 
-    private static UnitType[] TANK_UNITS = new UnitType[]{
-            UnitType.TANKS_DESERT,
-            UnitType.TANKS_GREEN,
-            UnitType.TANKS_GREY,
-            UnitType.TANKS_NAVY
+    private static UnitType[] LAND_UNITS = new UnitType[]{
+            UnitType.LAND_ATTACK,
+            UnitType.LAND_SPEED,
+            UnitType.LAND_LARGE
     };
     public LandUnit(UnitType unitType) {
         super(unitType);
@@ -18,7 +17,7 @@ public abstract class LandUnit extends Unit {
         traversable().add(TileType.DIRT);
         traversable().add(TileType.SAND);
         traversable().add(TileType.SNOW);
-        traversable().add(TileType.AUTUMN);
+        traversable().add(TileType.GOLD);
         traversable().add(TileType.ROCK);
         traversable().add(TileType.STONE);
     }
@@ -29,6 +28,6 @@ public abstract class LandUnit extends Unit {
 
     private static Random random = new Random();
     private static UnitType randomType() {
-        return TANK_UNITS[random.nextInt(TANK_UNITS.length)];
+        return LAND_UNITS[random.nextInt(LAND_UNITS.length)];
     }
 }
