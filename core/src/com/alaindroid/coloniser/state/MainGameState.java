@@ -105,9 +105,6 @@ public class MainGameState implements GameState {
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
 
-        System.out.println("Rendering grid hex: " + gameSave.grid().cells().keySet().size());
-
-//        spriteDrawer.draw(spriteBatch, gameSave);
         spriteDrawer.draw(spriteBatch, playerViewFilterService.filterGameSave(gameSave));
 
         spriteBatch.end();
