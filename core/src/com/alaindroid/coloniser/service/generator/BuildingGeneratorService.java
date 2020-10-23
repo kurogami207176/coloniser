@@ -25,7 +25,7 @@ public class BuildingGeneratorService {
         List<Settlement> settlements = new ArrayList<>();
         settlements.addAll(castles);
         settlements.addAll(accessoryBldgs);
-
+        return settlements;
     }
 
     public List<Settlement> generateTypeForPlayer(Collection<Player> players, SettlementType type, Grid grid) {
