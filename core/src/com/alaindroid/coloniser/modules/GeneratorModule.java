@@ -28,8 +28,9 @@ public class GeneratorModule {
 
     @Provides
     @Singleton
-    public BuildingGeneratorService buildingGeneratorService(NavigationService navigationService) {
-        return new BuildingGeneratorService(navigationService);
+    public BuildingGeneratorService buildingGeneratorService(NavigationService navigationService,
+                                                             GridGeneratorService gridGeneratorService) {
+        return new BuildingGeneratorService(gridGeneratorService, navigationService);
     }
 
     @Provides

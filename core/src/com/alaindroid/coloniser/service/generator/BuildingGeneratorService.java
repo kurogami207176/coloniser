@@ -7,21 +7,25 @@ import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.service.NavigationService;
 import com.alaindroid.coloniser.state.Player;
 import com.alaindroid.coloniser.units.LandUnit;
+import com.alaindroid.coloniser.util.Constants;
 import com.alaindroid.coloniser.util.CoordinateUtil;
 import com.alaindroid.coloniser.util.RandomUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class BuildingGeneratorService {
 
+    private final GridGeneratorService gridGeneratorService;
     private final NavigationService navigationService;
 
     public List<Settlement> generateStart(Collection<Player> players, Grid grid) {
         List<Settlement> castles = generateTypeForPlayer(players, SettlementType.CASTLE, grid);
-        List<Settlement> accessoryBldgs = generateForPlayers(players, 2,grid);
+        Map<Player, Set<Coordinate>> settlementRange = findCastleRange(players, castles, grid);
+        List<Settlement> accessoryBldgs = generateForPlayers(players, settlementRange, 2,grid);
         List<Settlement> settlements = new ArrayList<>();
         settlements.addAll(castles);
         settlements.addAll(accessoryBldgs);
@@ -37,16 +41,20 @@ public class BuildingGeneratorService {
         System.out.println("Generated Settlement Type: " + type);
         settlements.forEach(System.out::println);
         for(Settlement settlement: settlements) {
+            gridGeneratorService.growGrid(grid, settlement.coordinate(), Constants.HEX_SIDE_LENGTH, type.range());
             Set<Coordinate> visible = navigationService.visible(settlement.coordinate(), grid, settlement.type().range());
-            visible.forEach(settlement.player().seenCoordinates()::add);
+            visible.forEach(c -> {
+                settlement.player().seenCoordinates().add(c);
+            });
         }
         return settlements;
     }
 
-    public List<Settlement> generateForPlayers(Collection<Player> players, int towns, Grid grid) {
+    public List<Settlement> generateForPlayers(Collection<Player> players, Map<Player, Set<Coordinate>> settlementRange,
+                                               int towns, Grid grid) {
         Set<Coordinate> coordinates = new HashSet<>();
         List<Settlement> settlements = players.stream()
-                .map(player -> generate(player, randomCoordinates(grid, towns, coordinates)))
+                .map(player -> generate(player, randomCoordinates(grid, towns, settlementRange.get(player), coordinates)))
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
         System.out.println("Generated Settlement: ");
@@ -58,12 +66,32 @@ public class BuildingGeneratorService {
         return settlements;
     }
 
-    private Set<Coordinate> randomCoordinates(Grid grid, int count, Set<Coordinate> coordinatesSoFar) {
-        return randomCoordinates(grid, count, coordinatesSoFar, 1);
+    public Map findCastleRange(Collection<Player> players, List<Settlement> settlements, Grid grid) {
+        return players.stream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        p -> {
+                            Settlement settlement = settlements.stream()
+                                    .filter(s -> s.type() == SettlementType.CASTLE)
+                                    .filter(s -> s.player() == p)
+                                    .findFirst()
+                                    .orElse(null);
+                            return navigationService.visible(settlement.coordinate(), grid, settlement.type().range());
+                        }
+                ));
+
     }
+
+    private Set<Coordinate> randomCoordinates(Grid grid, int count, Set<Coordinate> toUse, Set<Coordinate> coordinatesSoFar) {
+        return randomCoordinates(grid, count, toUse, coordinatesSoFar, 1);
+    }
+
     private Set<Coordinate> randomCoordinates(Grid grid, int count, Set<Coordinate> coordinatesSoFar, float minimumDistance) {
+        return randomCoordinates(grid, count, grid.cells().keySet(), coordinatesSoFar, minimumDistance);
+    }
+
+    private Set<Coordinate> randomCoordinates(Grid grid, int count, Set<Coordinate> toUse, Set<Coordinate> coordinatesSoFar, float minimumDistance) {
         Set<Coordinate> rands = new HashSet<>();
-        Set<Coordinate> toUse = new HashSet<>(grid.cells().keySet());
         while (rands.size() < count) {
             List<Coordinate> avail = toUse.stream()
                     .filter(c -> LandUnit.isLandType(grid.cell(c).tileType()) )

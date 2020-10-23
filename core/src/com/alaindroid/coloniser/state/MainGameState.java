@@ -26,10 +26,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class MainGameState implements GameState {
@@ -79,7 +76,8 @@ public class MainGameState implements GameState {
         players.add(player2);
 
         List<Settlement> settlements = buildingGeneratorService.generateStart(players, grid);
-        List<Unit> units = unitGenerator.generateUnitsForPlayers(players, 3, 3, grid);
+        Map<Player, Set<Coordinate>> settlementRange = buildingGeneratorService.findCastleRange(players, settlements, grid);
+        List<Unit> units = unitGenerator.generateUnitsForPlayers(players, settlementRange, 3, 3, grid);
 
         gameSave = new GameSave(grid, units, settlements, players);
         gameSave.currentPlayer(player1);

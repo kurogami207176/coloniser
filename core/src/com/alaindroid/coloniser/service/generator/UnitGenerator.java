@@ -1,5 +1,7 @@
 package com.alaindroid.coloniser.service.generator;
 
+import com.alaindroid.coloniser.bldg.Settlement;
+import com.alaindroid.coloniser.bldg.SettlementType;
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.service.NavigationService;
@@ -21,7 +23,7 @@ public class UnitGenerator {
 
     private final NavigationService navigationService;
 
-    public List<Unit> generateUnitsForPlayers(Collection<Player> players, int ship, int land, Grid grid) {
+    public List<Unit> generateUnitsForPlayers(Collection<Player> players, Map<Player, Set<Coordinate>> settlementRange, int ship, int land, Grid grid) {
         List<Unit> units = players.stream()
                 .map(player -> generate(player, ship, land))
                 .flatMap(List::stream)
@@ -29,7 +31,7 @@ public class UnitGenerator {
         System.out.println("Generated units: " + units.size());
         List<Unit> removable = new ArrayList<>();
         for(Unit unit: units) {
-            randomCoordinate(unit, grid, units);
+            randomCoordinate(unit, grid, settlementRange.get(unit.player()), units);
             if (unit.coordinate() == null) {
                 removable.add(unit);
                 continue;
@@ -55,8 +57,8 @@ public class UnitGenerator {
         return gens;
     }
 
-    public void randomCoordinate(Unit unit, Grid grid, List<Unit> unitsSoFar) {
-        grid.cells().keySet().stream()
+    private void randomCoordinate(Unit unit, Grid grid, Set<Coordinate> settlementRange, List<Unit> unitsSoFar) {
+        settlementRange.stream()
                 .filter(CoordinateUtil.navigable(unit, grid))
                 .filter(coordinate -> unitsSoFar.stream().map(Unit::coordinate).filter(Objects::nonNull).noneMatch(coordinate::equals))
                 .findAny()
