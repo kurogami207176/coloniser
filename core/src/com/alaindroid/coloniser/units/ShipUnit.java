@@ -1,6 +1,7 @@
 package com.alaindroid.coloniser.units;
 
 import com.alaindroid.coloniser.grid.TileType;
+import com.alaindroid.coloniser.util.RandomUtil;
 
 import java.util.Random;
 
@@ -21,9 +22,8 @@ public abstract class ShipUnit extends Unit{
         return new ShipUnit(randomType()){};
     }
 
-    private static Random random = new Random();
     private static UnitType randomType() {
-        return SHIP_UNITS[random.nextInt(SHIP_UNITS.length)];
+        return SHIP_UNITS[RandomUtil.nextInt(SHIP_UNITS.length)];
     }
 
 }

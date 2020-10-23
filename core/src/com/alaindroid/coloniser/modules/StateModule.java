@@ -7,9 +7,9 @@ import com.alaindroid.coloniser.service.GamespeedService;
 import com.alaindroid.coloniser.service.NavigationService;
 import com.alaindroid.coloniser.service.PlayerViewFilterService;
 import com.alaindroid.coloniser.service.animation.AnimationProcessorService;
+import com.alaindroid.coloniser.service.generator.BuildingGeneratorService;
 import com.alaindroid.coloniser.service.generator.GridGeneratorService;
 import com.alaindroid.coloniser.service.generator.UnitGenerator;
-import com.alaindroid.coloniser.service.grid.CellGeneratorService;
 import com.alaindroid.coloniser.state.MainGameState;
 import dagger.Module;
 import dagger.Provides;
@@ -25,12 +25,13 @@ public class StateModule {
                                        BackgroundDrawer backgroundDrawer,
                                        GridGeneratorService gridGeneratorService,
                                        UnitGenerator unitGenerator,
+                                       BuildingGeneratorService buildingGeneratorService,
                                        NavigationService navigationService,
                                        DecisionService decisionService,
                                        GamespeedService gamespeedService,
                                        AnimationProcessorService animationProcessorService,
                                        PlayerViewFilterService playerViewFilterService) {
-        return new MainGameState(spriteDrawer, backgroundDrawer, gridGeneratorService, unitGenerator, navigationService,
-                decisionService, gamespeedService, animationProcessorService, playerViewFilterService);
+        return new MainGameState(spriteDrawer, backgroundDrawer, gridGeneratorService, unitGenerator, buildingGeneratorService,
+                navigationService, decisionService, gamespeedService, animationProcessorService, playerViewFilterService);
     }
 }

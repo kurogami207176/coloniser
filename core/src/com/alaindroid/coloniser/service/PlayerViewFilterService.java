@@ -1,5 +1,6 @@
 package com.alaindroid.coloniser.service;
 
+import com.alaindroid.coloniser.bldg.Settlement;
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.grid.HexCell;
@@ -29,6 +30,7 @@ public class PlayerViewFilterService {
         return new GameSave(
                 filterGrid(player, playerVisibleCoords, fullGameSave.grid()),
                 filterUnits(player, playerVisibleCoords, fullGameSave.units()),
+                filterSettlement(player, playerVisibleCoords, fullGameSave.settlements()),
                 fullGameSave.players()
         );
     }
@@ -61,6 +63,15 @@ public class PlayerViewFilterService {
                 .filter(u -> u.player().equals(player) || playerVisibleCoords.contains(u.coordinate()))
                 .collect(Collectors.toList()));
         visibleUnits.addAll(player.seenUnit().stream().map(Player.UnitMemory::generateUnit).collect(Collectors.toList()));
+        return visibleUnits;
+    }
+
+    public List<Settlement> filterSettlement(Player player, Set<Coordinate> playerVisibleCoords, List<Settlement> allUnits) {
+        List<Settlement> visibleUnits = new ArrayList<>();
+        visibleUnits.addAll(allUnits.stream()
+                .filter(u -> u.player().equals(player) || playerVisibleCoords.contains(u.coordinate()))
+                .collect(Collectors.toList()));
+//        visibleUnits.addAll(player.seenUnit().stream().map(Player.UnitMemory::generateUnit).collect(Collectors.toList()));
         return visibleUnits;
     }
 }

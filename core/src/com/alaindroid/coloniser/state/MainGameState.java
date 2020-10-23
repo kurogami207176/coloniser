@@ -1,5 +1,6 @@
 package com.alaindroid.coloniser.state;
 
+import com.alaindroid.coloniser.bldg.Settlement;
 import com.alaindroid.coloniser.draw.BackgroundDrawer;
 import com.alaindroid.coloniser.draw.Point2D;
 import com.alaindroid.coloniser.draw.SpriteDrawer;
@@ -11,6 +12,7 @@ import com.alaindroid.coloniser.service.GamespeedService;
 import com.alaindroid.coloniser.service.NavigationService;
 import com.alaindroid.coloniser.service.PlayerViewFilterService;
 import com.alaindroid.coloniser.service.animation.AnimationProcessorService;
+import com.alaindroid.coloniser.service.generator.BuildingGeneratorService;
 import com.alaindroid.coloniser.service.generator.GridGeneratorService;
 import com.alaindroid.coloniser.service.generator.UnitGenerator;
 import com.alaindroid.coloniser.units.Unit;
@@ -23,7 +25,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +35,7 @@ public class MainGameState implements GameState {
     final BackgroundDrawer backgroundDrawer;
     final GridGeneratorService gridGeneratorService;
     final UnitGenerator unitGenerator;
+    final BuildingGeneratorService buildingGeneratorService;
     final NavigationService navigationService;
     final DecisionService decisionService;
     final GamespeedService gamespeedService;
@@ -76,7 +78,9 @@ public class MainGameState implements GameState {
 
         List<Unit> units = unitGenerator.generateUnitsForPlayers(players, 3, 3, grid);
 
-        gameSave = new GameSave(grid, units, players);
+        List<Settlement> settlements = buildingGeneratorService.generateForPlayers(players, 2,grid);
+
+        gameSave = new GameSave(grid, units, settlements, players);
         gameSave.currentPlayer(player1);
         backgroundDrawer.create();
         spriteDrawer.create();

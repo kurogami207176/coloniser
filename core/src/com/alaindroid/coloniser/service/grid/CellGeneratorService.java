@@ -4,6 +4,7 @@ import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.grid.HexCell;
 import com.alaindroid.coloniser.grid.TileType;
+import com.alaindroid.coloniser.util.RandomUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.util.*;
@@ -16,7 +17,6 @@ import static com.alaindroid.coloniser.util.Constants.WATER_PECENTAGE;
 @RequiredArgsConstructor
 public class CellGeneratorService {
     private final LandTileWeightService landTileWeightService;
-    private Random random = new Random();
 
     public HexCell generate(Coordinate coordinate, Grid grid) {
         Map<Coordinate, HexCell> hexCellMap = grid.cells();
@@ -80,7 +80,7 @@ public class CellGeneratorService {
                 neighborTiles);
 
         int totalWeight = addWaterTile(fullWeightedMap);
-        int randWeight = random.nextInt(totalWeight);
+        int randWeight = RandomUtil.nextInt(totalWeight);
         TileType generated = fullWeightedMap.get(fullWeightedMap.ceilingKey(randWeight));
         return generated;
     }

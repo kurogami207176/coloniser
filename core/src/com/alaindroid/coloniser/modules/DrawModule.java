@@ -1,9 +1,6 @@
 package com.alaindroid.coloniser.modules;
 
-import com.alaindroid.coloniser.draw.BackgroundDrawer;
-import com.alaindroid.coloniser.draw.HexGridDrawer;
-import com.alaindroid.coloniser.draw.SpriteDrawer;
-import com.alaindroid.coloniser.draw.UnitDrawer;
+import com.alaindroid.coloniser.draw.*;
 import com.alaindroid.coloniser.service.animation.AnimationProcessorService;
 import dagger.Module;
 import dagger.Provides;
@@ -27,8 +24,14 @@ public class DrawModule {
 
     @Provides
     @Singleton
-    public SpriteDrawer spriteDrawer(HexGridDrawer hexDrawer, UnitDrawer unitDrawer) {
-        return new SpriteDrawer(hexDrawer, unitDrawer);
+    public BuildingDrawer buildingDrawer() {
+        return new BuildingDrawer();
+    }
+
+    @Provides
+    @Singleton
+    public SpriteDrawer spriteDrawer(HexGridDrawer hexDrawer, UnitDrawer unitDrawer, BuildingDrawer buildingDrawer) {
+        return new SpriteDrawer(hexDrawer, unitDrawer, buildingDrawer);
     }
 
     @Provides

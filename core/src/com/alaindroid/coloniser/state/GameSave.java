@@ -1,5 +1,6 @@
 package com.alaindroid.coloniser.state;
 
+import com.alaindroid.coloniser.bldg.Settlement;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.units.Unit;
 import lombok.Data;
@@ -13,6 +14,7 @@ import java.util.Set;
 public class GameSave {
     private final Grid grid;
     private final List<Unit> units;
+    private final List<Settlement> settlements;
 
     private final Set<Player> players;
 

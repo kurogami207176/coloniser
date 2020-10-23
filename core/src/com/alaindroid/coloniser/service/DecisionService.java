@@ -15,7 +15,6 @@ import java.util.Set;
 
 @RequiredArgsConstructor
 public class DecisionService {
-    private Random random = new Random();
     private final NavigationService navigationService;
     private final PathFinderService pathFinderService;
     private final GridGeneratorService gridGeneratorService;

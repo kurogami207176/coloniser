@@ -1,6 +1,7 @@
 package com.alaindroid.coloniser.modules;
 
 import com.alaindroid.coloniser.service.NavigationService;
+import com.alaindroid.coloniser.service.generator.BuildingGeneratorService;
 import com.alaindroid.coloniser.service.generator.GridGeneratorService;
 import com.alaindroid.coloniser.service.generator.UnitGenerator;
 import com.alaindroid.coloniser.service.grid.CellGeneratorService;
@@ -17,11 +18,18 @@ public class GeneratorModule {
     @Singleton
     public GridGeneratorService gridGeneratorService(CellGeneratorService cellGeneratorService) {
         return new GridGeneratorService(cellGeneratorService);
-    }    @Provides
+    }
 
+    @Provides
     @Singleton
     public UnitGenerator unitGenerator(NavigationService navigationService) {
         return new UnitGenerator(navigationService);
+    }
+
+    @Provides
+    @Singleton
+    public BuildingGeneratorService buildingGeneratorService(NavigationService navigationService) {
+        return new BuildingGeneratorService(navigationService);
     }
 
     @Provides

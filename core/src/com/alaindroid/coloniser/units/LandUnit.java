@@ -1,8 +1,12 @@
 package com.alaindroid.coloniser.units;
 
 import com.alaindroid.coloniser.grid.TileType;
+import com.alaindroid.coloniser.util.RandomUtil;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public abstract class LandUnit extends Unit {
 
@@ -11,23 +15,22 @@ public abstract class LandUnit extends Unit {
             UnitType.LAND_SPEED,
             UnitType.LAND_LARGE
     };
+    private static List<TileType> landTypes = Arrays.asList(TileType.GRASS,TileType.DIRT,TileType.SAND,TileType.SNOW,
+            TileType.GOLD,TileType.ROCK, TileType.STONE);
     public LandUnit(UnitType unitType) {
         super(unitType);
-        traversable().add(TileType.GRASS);
-        traversable().add(TileType.DIRT);
-        traversable().add(TileType.SAND);
-        traversable().add(TileType.SNOW);
-        traversable().add(TileType.GOLD);
-        traversable().add(TileType.ROCK);
-        traversable().add(TileType.STONE);
+        traversable().addAll(landTypes);
     }
 
     public static LandUnit random() {
         return new LandUnit(randomType()){};
     }
 
-    private static Random random = new Random();
+    public static boolean isLandType(TileType tileType) {
+        return landTypes.contains(tileType);
+    }
+
     private static UnitType randomType() {
-        return LAND_UNITS[random.nextInt(LAND_UNITS.length)];
+        return LAND_UNITS[RandomUtil.nextInt(LAND_UNITS.length)];
     }
 }
