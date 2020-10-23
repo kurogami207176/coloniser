@@ -6,7 +6,7 @@ import java.util.Random;
 
 public abstract class ShipUnit extends Unit{
 
-    private static UnitType[] SHIP_UNITS = new UnitType[]{
+    public static UnitType[] SHIP_UNITS = new UnitType[]{
             UnitType.SHIP_SPEED,
             UnitType.SHIP_ATTACK,
             UnitType.SHIP_LARGE

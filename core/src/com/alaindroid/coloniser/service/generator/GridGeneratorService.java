@@ -2,63 +2,62 @@ package com.alaindroid.coloniser.service.generator;
 
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
+import com.alaindroid.coloniser.grid.HexCell;
 import com.alaindroid.coloniser.service.grid.CellGeneratorService;
 import com.alaindroid.coloniser.util.CoordinateUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class GridGeneratorService {
+    private final CellGeneratorService cellGeneratorService;
     @SneakyThrows
-    public Grid generateGrid(int size, CellGeneratorService cellGeneratorService, float s) {
+    public Grid initGrid(int size, Coordinate minRGB, Coordinate maxRGB, float s) {
         Coordinate curr = new Coordinate(0,0,0, CoordinateUtil.toPoint(0, 0, 0, s));
+        return initGrid(size, minRGB, maxRGB, s, curr);
+    }
 
-        Grid grid = new Grid();
+    @SneakyThrows
+    public Grid initGrid(int size, Coordinate minRGB, Coordinate maxRGB, float s, Coordinate curr) {
+        Grid grid = new Grid(minRGB, maxRGB);
         Set<Coordinate> coordinates = new HashSet<>();
         coordinates.add(curr);
         for(int i =0 ; i < size; i++) {
             coordinates.addAll(grow(coordinates, s));
         }
         coordinates.forEach(c -> grid.cell(c, cellGeneratorService.generate(c, grid.cells())));
-        gridNeighbors(grid, s);
 //        gridPoint(grid, s);
         return grid;
     }
 
+    public Grid growGrid(Grid currentGrid, Coordinate current, float s, int count) {
+        System.out.println("Growing grid: " + currentGrid.cells().keySet().size());
+        Set<Coordinate> coordinates = new HashSet<>();
+        coordinates.add(current);
+        for(int i =0 ; i < count; i++) {
+            coordinates.addAll(grow(coordinates, s));
+        }
+        coordinates.stream()
+                .filter(currentGrid::within)
+                .filter(c -> !currentGrid.cells().keySet().contains(c))
+                .forEach(c -> {
+                    HexCell hexCell = cellGeneratorService.generate(c, currentGrid.cells());
+                    hexCell.currentPopHeight(-200);
+                    hexCell.popped(false);
+                    currentGrid.cell(c, hexCell);
+                });
+        System.out.println("Grown grid: " + currentGrid.cells().keySet().size());
+        return currentGrid;
+    }
+
     private Set<Coordinate> grow(Set<Coordinate> coordinates, float s) {
-        return coordinates.stream().map(c -> generateNeighbors(c, s))
+        return coordinates.stream()
+                .map(Coordinate::generateNeighbors)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet());
     }
-
-    private void gridNeighbors(Grid grid, float s) {
-        grid.cells().keySet().stream()
-                .forEach( coordinate -> {
-                    Set<Coordinate> coordinates = generateNeighbors(coordinate, s).stream()
-                            .filter(grid.cells().keySet()::contains)
-                            .collect(Collectors.toSet());
-                    grid.neighbors(coordinate, coordinates);
-                } );
-    }
-
-    public Set<Coordinate> generateNeighbors(Coordinate origin, float s) {
-        Set<Coordinate> coordinates = new HashSet<>();
-        coordinates.add(coordOffset(origin, 1, 0, -1, s));
-        coordinates.add(coordOffset(origin, 1, -1, 0, s));
-        coordinates.add(coordOffset(origin, 0, 1, -1, s));
-        coordinates.add(coordOffset(origin, -1, 1, 0, s));
-        coordinates.add(coordOffset(origin, 0, -1, 1, s));
-        coordinates.add(coordOffset(origin, -1, 0, 1, s));
-        return coordinates;
-    }
-
-    private Coordinate coordOffset(Coordinate origin, int r, int g, int b, float s) {
-        return new Coordinate(origin.r() + r,
-                origin.g() + g,
-                origin.b() + b,
-                CoordinateUtil.toPoint(origin.r() + r, origin.g() + g, origin.b() + b, s));
-    }
-
 }

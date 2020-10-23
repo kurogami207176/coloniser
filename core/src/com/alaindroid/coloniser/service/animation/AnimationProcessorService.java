@@ -32,8 +32,13 @@ public class AnimationProcessorService {
             nextPopHeight = Math.min(popHeight, hexCell.currentPopHeight() + popReductionSpeed * deltaTime);
 
         }
-        else if (!hexCell.popped() && hexCell.currentPopHeight() > 0) {
-            nextPopHeight = Math.max(0, hexCell.currentPopHeight() - popReductionSpeed * deltaTime);
+        else if (!hexCell.popped()) {
+            if (hexCell.currentPopHeight() > 0) {
+                nextPopHeight = Math.max(0, hexCell.currentPopHeight() - popReductionSpeed * deltaTime);
+            }
+            else if (hexCell.currentPopHeight() < 0) {
+                nextPopHeight = Math.min(0, hexCell.currentPopHeight() + popReductionSpeed * deltaTime);
+            }
         }
         hexCell.currentPopHeight(nextPopHeight);
     }

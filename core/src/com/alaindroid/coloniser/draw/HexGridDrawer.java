@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class HexGridDrawer {
@@ -23,11 +24,11 @@ public class HexGridDrawer {
 
     public void create() {
         for (TileType type: TileType.values()) {
-            Texture texture = new Texture("terrain/" + type.name().toLowerCase() + ".png");
-            textureWidth = texture.getWidth();
-            textureHeight = texture.getHeight();
-            tileTypeTextureMap.put(type, texture);
+            tileTypeTextureMap.computeIfAbsent(type, tileTypeTextureFunction);
         }
+        Texture texture = tileTypeTextureMap.values().stream().findFirst().orElseThrow(() -> new RuntimeException("No texture loaded"));
+        textureWidth = texture.getWidth();
+        textureHeight = texture.getHeight();
     }
 
     public void dispose() {
@@ -65,11 +66,13 @@ public class HexGridDrawer {
     private SpriteDraw renderHexTile(SpriteBatch spriteBatch, HexDraw hexDraw) {
         Point2D p = hexDraw.p();
         HexCell cell = hexDraw.cell();
-        Texture texture = tileTypeTextureMap.get(cell.tileType());
+        Texture texture = tileTypeTextureMap.computeIfAbsent(cell.tileType(), tileTypeTextureFunction);
         Sprite sprite = new Sprite(texture);
         sprite.setX(p.x() - texture.getWidth()/2);
         sprite.setY(p.y() - texture.getHeight()/2 - texture.getHeight()/7 + cell.currentPopHeight());
         sprite.draw(spriteBatch);
         return new SpriteDraw(sprite, (int) p.y());
     }
+
+    private Function<TileType, Texture> tileTypeTextureFunction = type -> new Texture("terrain/" + type.name().toLowerCase() + ".png");
 }

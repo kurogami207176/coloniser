@@ -9,6 +9,7 @@ import com.alaindroid.coloniser.state.Player;
 import com.alaindroid.coloniser.units.Unit;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,9 +34,20 @@ public class PlayerViewFilterService {
     }
 
     public Grid filterGrid(Player player, Set<Coordinate> playerVisibleCoords, Grid fullGrid) {
-        Grid grid = new Grid();
+        Grid grid = new Grid(fullGrid.minRGB(), fullGrid.maxRGB());
 
-        fullGrid.cells().keySet().forEach( k -> grid.cells().put(k, new HexCell(TileType.UNKNOWN)) );
+        playerVisibleCoords.stream()
+                .map(c -> navigationService.visible(c, fullGrid, 1))
+                .flatMap(Set::stream)
+                .forEach(c -> {
+                    HexCell hexCell = new HexCell(TileType.UNKNOWN);
+                    HexCell exCell = fullGrid.cells().get(c);
+                    if (exCell != null) {
+                        hexCell.currentPopHeight(exCell.currentPopHeight());
+                    }
+                    grid.cells().put(c, hexCell);
+                });
+        // TODO: Seen but currently hidden... fog of war?
         fullGrid.cells().keySet()
                 .stream()
                 .filter(c -> player.seenCoordinates().contains(c) || playerVisibleCoords.contains(c))
@@ -44,8 +56,11 @@ public class PlayerViewFilterService {
     }
 
     public List<Unit> filterUnits(Player player, Set<Coordinate> playerVisibleCoords, List<Unit> allUnits) {
-        return allUnits.stream()
+        List<Unit> visibleUnits = new ArrayList<>();
+        visibleUnits.addAll(allUnits.stream()
                 .filter(u -> u.player().equals(player) || playerVisibleCoords.contains(u.coordinate()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+        visibleUnits.addAll(player.seenUnit().stream().map(Player.UnitMemory::generateUnit).collect(Collectors.toList()));
+        return visibleUnits;
     }
 }

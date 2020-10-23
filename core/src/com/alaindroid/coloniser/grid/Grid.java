@@ -1,18 +1,20 @@
 package com.alaindroid.coloniser.grid;
 
-import com.alaindroid.coloniser.draw.Point2D;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 @Accessors(fluent = true)
 @RequiredArgsConstructor
 public class Grid {
     private Map<Coordinate, HexCell> cells = new HashMap<>();
-    private Map<Coordinate, Set<Coordinate>> neighborMap = new HashMap<>();
+    private final Coordinate minRGB;
+    private final Coordinate maxRGB;
+
 
     public HexCell cell(Coordinate coordinate) {
         return cells.get(coordinate);
@@ -22,21 +24,14 @@ public class Grid {
         cells.put(coordinate,cell);
     }
 
-    public void neighbors(Coordinate coordinate, Collection<Coordinate> neighbors) {
-        Set<Coordinate> neighborSet = neighborMap.get(coordinate);
-        if (neighborSet == null) {
-            neighborSet = new HashSet<>();
-            neighborMap.put(coordinate, neighborSet);
-        }
-        neighborSet.addAll(neighbors);
-    }
-
-    public Set<Coordinate> neighbors(Coordinate coordinate) {
-        return neighborMap.get(coordinate);
-    }
-
     public void unpopAll() {
         cells.values().forEach(h -> h.popped(false));
+    }
+
+    public boolean within(Coordinate coordinate) {
+        return minRGB.r() <= coordinate.r() && coordinate.r() <= maxRGB.r() &&
+                minRGB.g() <= coordinate.g() && coordinate.g() <= maxRGB.g() &&
+                minRGB.b() <= coordinate.b() && coordinate.b() <= maxRGB.b();
     }
 
 }

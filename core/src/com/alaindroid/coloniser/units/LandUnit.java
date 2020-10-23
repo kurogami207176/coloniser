@@ -6,7 +6,7 @@ import java.util.Random;
 
 public abstract class LandUnit extends Unit {
 
-    private static UnitType[] LAND_UNITS = new UnitType[]{
+    public static UnitType[] LAND_UNITS = new UnitType[]{
             UnitType.LAND_ATTACK,
             UnitType.LAND_SPEED,
             UnitType.LAND_LARGE

@@ -13,8 +13,8 @@ public class GeneratorModule {
 
     @Provides
     @Singleton
-    public GridGeneratorService gridGeneratorService() {
-        return new GridGeneratorService();
+    public GridGeneratorService gridGeneratorService(CellGeneratorService cellGeneratorService) {
+        return new GridGeneratorService(cellGeneratorService);
     }    @Provides
 
     @Singleton

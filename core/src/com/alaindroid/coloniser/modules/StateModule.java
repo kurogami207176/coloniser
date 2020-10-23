@@ -25,14 +25,12 @@ public class StateModule {
                                        BackgroundDrawer backgroundDrawer,
                                        GridGeneratorService gridGeneratorService,
                                        UnitGenerator unitGenerator,
-                                       CellGeneratorService cellGeneratorService,
                                        NavigationService navigationService,
                                        DecisionService decisionService,
                                        GamespeedService gamespeedService,
                                        AnimationProcessorService animationProcessorService,
                                        PlayerViewFilterService playerViewFilterService) {
-        return new MainGameState(spriteDrawer, backgroundDrawer, gridGeneratorService, unitGenerator,
-                cellGeneratorService, navigationService, decisionService, gamespeedService, animationProcessorService,
-                playerViewFilterService);
+        return new MainGameState(spriteDrawer, backgroundDrawer, gridGeneratorService, unitGenerator, navigationService,
+                decisionService, gamespeedService, animationProcessorService, playerViewFilterService);
     }
 }

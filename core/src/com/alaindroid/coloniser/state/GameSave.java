@@ -1,5 +1,6 @@
 package com.alaindroid.coloniser.state;
 
+import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.units.Unit;
 import lombok.Data;
@@ -15,7 +16,9 @@ public class GameSave {
     private final List<Unit> units;
 
     private final Set<Player> players;
+
     private Player currentPlayer;
+
 
     public Unit findWobblingUnit() {
         return units.stream().filter(Unit::wobble).findFirst().orElse(null);

@@ -13,7 +13,9 @@ public enum UnitType {
     LAND_LARGE(0, 3, 1),
     SHIP_ATTACK(1, 5, 2),
     SHIP_SPEED(1, 1, 3),
-    SHIP_LARGE(3, 1, 2)
+    SHIP_LARGE(3, 1, 2),
+    LAND_UNKNOWN(0, 0,0),
+    SHIP_UNKNOWN(0, 0, 0)
     ;
 
     private int capacity;

@@ -29,6 +29,9 @@ public class SpriteDrawer {
         List<SpriteDraw> spriteDraws = new ArrayList<>();
         spriteDraws.addAll(hexGridDrawer.draw(spriteBatch, gameSave.grid()));
         spriteDraws.addAll(unitDrawer.draw(spriteBatch, gameSave.units()));
+        if (gameSave.currentPlayer() != null) {
+            spriteDraws.addAll(unitDrawer.drawMemory(spriteBatch, gameSave.currentPlayer().seenUnit()));
+        }
 
         draw(spriteBatch, spriteDraws);
     }

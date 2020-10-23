@@ -1,6 +1,7 @@
 package com.alaindroid.coloniser.modules;
 
 import com.alaindroid.coloniser.service.*;
+import com.alaindroid.coloniser.service.generator.GridGeneratorService;
 import dagger.Module;
 import dagger.Provides;
 
@@ -16,8 +17,9 @@ public class ServiceModule {
 
     @Provides
     @Singleton
-    public DecisionService decisionService(NavigationService navigationService, PathFinderService pathFinderService) {
-        return new DecisionService(navigationService, pathFinderService);
+    public DecisionService decisionService(NavigationService navigationService, PathFinderService pathFinderService,
+                                           GridGeneratorService gridGeneratorService) {
+        return new DecisionService(navigationService, pathFinderService, gridGeneratorService);
     }
 
     @Provides

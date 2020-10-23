@@ -2,6 +2,7 @@ package com.alaindroid.coloniser.state;
 
 import com.alaindroid.coloniser.draw.BackgroundDrawer;
 import com.alaindroid.coloniser.draw.SpriteDrawer;
+import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.inputs.GameControllerListener;
 import com.alaindroid.coloniser.service.DecisionService;
@@ -11,8 +12,8 @@ import com.alaindroid.coloniser.service.PlayerViewFilterService;
 import com.alaindroid.coloniser.service.animation.AnimationProcessorService;
 import com.alaindroid.coloniser.service.generator.GridGeneratorService;
 import com.alaindroid.coloniser.service.generator.UnitGenerator;
-import com.alaindroid.coloniser.service.grid.CellGeneratorService;
 import com.alaindroid.coloniser.units.Unit;
+import com.alaindroid.coloniser.util.Constants;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -32,7 +33,6 @@ public class MainGameState implements GameState {
     final BackgroundDrawer backgroundDrawer;
     final GridGeneratorService gridGeneratorService;
     final UnitGenerator unitGenerator;
-    final CellGeneratorService cellGeneratorService;
     final NavigationService navigationService;
     final DecisionService decisionService;
     final GamespeedService gamespeedService;
@@ -61,8 +61,9 @@ public class MainGameState implements GameState {
                 ? Gdx.graphics.getHeight() / Gdx.graphics.getDensity()
                 : 960;
         camera = new OrthographicCamera(width, height);
-
-        Grid grid = gridGeneratorService.generateGrid(10, cellGeneratorService, 38);
+        Coordinate minRGB = new Coordinate(-50, -50, -50, Constants.HEX_SIDE_LENGTH);
+        Coordinate maxRGB = new Coordinate(50, 50, 50, Constants.HEX_SIDE_LENGTH);
+        Grid grid = gridGeneratorService.initGrid(10, minRGB, maxRGB, Constants.HEX_SIDE_LENGTH);
 
         Set<Player> players = new HashSet<>();
         player1 = new Player(Player.Color.RED);
@@ -78,6 +79,8 @@ public class MainGameState implements GameState {
         units.addAll(units2);
         for(Unit unit: units) {
             unitGenerator.randomCoordinate(unit, grid, units);
+            Set<Coordinate> visible = navigationService.visible(unit.coordinate(), grid, unit.unitType().range());
+            visible.forEach(unit.player().seenCoordinates()::add);
         }
 
         gameSave = new GameSave(grid, units, players);
@@ -102,6 +105,9 @@ public class MainGameState implements GameState {
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
 
+        System.out.println("Rendering grid hex: " + gameSave.grid().cells().keySet().size());
+
+//        spriteDrawer.draw(spriteBatch, gameSave);
         spriteDrawer.draw(spriteBatch, playerViewFilterService.filterGameSave(gameSave));
 
         spriteBatch.end();
