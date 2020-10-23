@@ -1,6 +1,7 @@
 package com.alaindroid.coloniser.state;
 
 import com.alaindroid.coloniser.bldg.Settlement;
+import com.alaindroid.coloniser.bldg.SettlementType;
 import com.alaindroid.coloniser.draw.BackgroundDrawer;
 import com.alaindroid.coloniser.draw.Point2D;
 import com.alaindroid.coloniser.draw.SpriteDrawer;
@@ -25,6 +26,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -76,9 +78,8 @@ public class MainGameState implements GameState {
         players.add(player1);
         players.add(player2);
 
+        List<Settlement> settlements = buildingGeneratorService.generateStart(players, grid);
         List<Unit> units = unitGenerator.generateUnitsForPlayers(players, 3, 3, grid);
-
-        List<Settlement> settlements = buildingGeneratorService.generateForPlayers(players, 2,grid);
 
         gameSave = new GameSave(grid, units, settlements, players);
         gameSave.currentPlayer(player1);

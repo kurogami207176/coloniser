@@ -5,6 +5,7 @@ import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.grid.HexCell;
 import com.alaindroid.coloniser.units.Unit;
+import com.badlogic.gdx.math.Vector3;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +22,10 @@ public class CoordinateUtil {
                 new Point2D((float) x, (float) y),
                 new Point2D( (float) x2, (float) y)
         );
+    }
+
+    public static float distance(Coordinate a, Coordinate b) {
+        return new Vector3(a.r(), a.g(), a.b()).dst(new Vector3(b.r(), b.g(), b.b()));
     }
 
     public static Predicate<Coordinate> navigable(Unit unit, Grid grid) {
