@@ -38,6 +38,7 @@ public class UnitDrawer {
 
     private SpriteDraw renderTexture(SpriteBatch spriteBatch, Unit unit) {
         Point2D p = unit.currentPoint();
+
         String key = textureKey.apply(unit);
         Texture texture = unitTypeTextureMap.computeIfAbsent(key, k -> new Texture("unit/" + k + ".png"));
         Sprite sprite = new Sprite(texture);

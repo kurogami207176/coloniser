@@ -17,7 +17,7 @@ public class GridGeneratorService {
     private final CellGeneratorService cellGeneratorService;
     @SneakyThrows
     public Grid initGrid(int size, Coordinate minRGB, Coordinate maxRGB, float s) {
-        Coordinate curr = new Coordinate(0,0,0, CoordinateUtil.toPoint(0, 0, 0, s));
+        Coordinate curr = new Coordinate(0,0,0, s);
         return initGrid(size, minRGB, maxRGB, s, curr);
     }
 
@@ -29,13 +29,14 @@ public class GridGeneratorService {
         for(int i =0 ; i < size; i++) {
             coordinates.addAll(grow(coordinates, s));
         }
-        coordinates.forEach(c -> grid.cell(c, cellGeneratorService.generate(c, grid.cells())));
+        coordinates.stream()
+                .filter(grid::within)
+                .forEach(c -> grid.cell(c, cellGeneratorService.generate(c, grid)));
 //        gridPoint(grid, s);
         return grid;
     }
 
     public Grid growGrid(Grid currentGrid, Coordinate current, float s, int count) {
-        System.out.println("Growing grid: " + currentGrid.cells().keySet().size());
         Set<Coordinate> coordinates = new HashSet<>();
         coordinates.add(current);
         for(int i =0 ; i < count; i++) {
@@ -45,12 +46,11 @@ public class GridGeneratorService {
                 .filter(currentGrid::within)
                 .filter(c -> !currentGrid.cells().keySet().contains(c))
                 .forEach(c -> {
-                    HexCell hexCell = cellGeneratorService.generate(c, currentGrid.cells());
+                    HexCell hexCell = cellGeneratorService.generate(c, currentGrid);
                     hexCell.currentPopHeight(-200);
                     hexCell.popped(false);
                     currentGrid.cell(c, hexCell);
                 });
-        System.out.println("Grown grid: " + currentGrid.cells().keySet().size());
         return currentGrid;
     }
 

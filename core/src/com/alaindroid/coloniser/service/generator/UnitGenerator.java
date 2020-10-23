@@ -1,20 +1,46 @@
 package com.alaindroid.coloniser.service.generator;
 
+import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
+import com.alaindroid.coloniser.service.NavigationService;
 import com.alaindroid.coloniser.state.Player;
 import com.alaindroid.coloniser.units.LandUnit;
 import com.alaindroid.coloniser.units.ShipUnit;
 import com.alaindroid.coloniser.units.Unit;
 import com.alaindroid.coloniser.util.CoordinateUtil;
+import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+@RequiredArgsConstructor
 public class UnitGenerator {
+
+    private final NavigationService navigationService;
+
+    public List<Unit> generateUnitsForPlayers(Collection<Player> players, int ship, int land, Grid grid) {
+        List<Unit> units = players.stream()
+                .map(player -> generate(player, ship, land))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+        System.out.println("Generated units: " + units.size());
+        List<Unit> removable = new ArrayList<>();
+        for(Unit unit: units) {
+            randomCoordinate(unit, grid, units);
+            if (unit.coordinate() == null) {
+                removable.add(unit);
+                continue;
+            }
+            Set<Coordinate> visible = navigationService.visible(unit.coordinate(), grid, unit.unitType().range());
+            visible.forEach(unit.player().seenCoordinates()::add);
+        }
+        units.removeAll(removable);
+        return units;
+    }
+
     public List<Unit> generate(Player player, int ship, int land) {
         List<Unit> gens =  Stream.of(
                 IntStream.range(0, ship)

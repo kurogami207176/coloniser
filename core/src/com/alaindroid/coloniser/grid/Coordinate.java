@@ -44,7 +44,7 @@ public class Coordinate {
         return new Coordinate(this.r() + r,
                 this.g() + g,
                 this.b() + b,
-                CoordinateUtil.toPoint(this.r() + r, this.g() + g, this.b() + b, s));
+                s);
     }
 
 }

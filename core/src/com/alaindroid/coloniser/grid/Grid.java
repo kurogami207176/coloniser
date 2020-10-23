@@ -1,5 +1,6 @@
 package com.alaindroid.coloniser.grid;
 
+import com.alaindroid.coloniser.draw.Point2D;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -14,7 +15,6 @@ public class Grid {
     private Map<Coordinate, HexCell> cells = new HashMap<>();
     private final Coordinate minRGB;
     private final Coordinate maxRGB;
-
 
     public HexCell cell(Coordinate coordinate) {
         return cells.get(coordinate);
@@ -32,6 +32,16 @@ public class Grid {
         return minRGB.r() <= coordinate.r() && coordinate.r() <= maxRGB.r() &&
                 minRGB.g() <= coordinate.g() && coordinate.g() <= maxRGB.g() &&
                 minRGB.b() <= coordinate.b() && coordinate.b() <= maxRGB.b();
+    }
+
+    public Point2D centerPoint() {
+        int total = cells.keySet().size();
+        return cells.keySet().stream()
+                .map(Coordinate::point)
+                .map(p -> p.get(0))
+                .reduce((p1, p2) -> new Point2D(p1.x() + p2.x(), p1.y() + p2.y()))
+                .map(p -> new Point2D(p.x() / total, p.y() / total))
+                .orElse(new Point2D(0, 0));
     }
 
 }

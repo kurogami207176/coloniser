@@ -1,6 +1,7 @@
 package com.alaindroid.coloniser.state;
 
 import com.alaindroid.coloniser.draw.BackgroundDrawer;
+import com.alaindroid.coloniser.draw.Point2D;
 import com.alaindroid.coloniser.draw.SpriteDrawer;
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
@@ -64,6 +65,8 @@ public class MainGameState implements GameState {
         Coordinate minRGB = new Coordinate(-50, -50, -50, Constants.HEX_SIDE_LENGTH);
         Coordinate maxRGB = new Coordinate(50, 50, 50, Constants.HEX_SIDE_LENGTH);
         Grid grid = gridGeneratorService.initGrid(10, minRGB, maxRGB, Constants.HEX_SIDE_LENGTH);
+        Point2D center = grid.centerPoint();
+        camera.translate(center.x(), center.y());
 
         Set<Player> players = new HashSet<>();
         player1 = new Player(Player.Color.RED);
@@ -71,17 +74,7 @@ public class MainGameState implements GameState {
         players.add(player1);
         players.add(player2);
 
-        List<Unit> units1 = unitGenerator.generate(player1, 3, 3);
-        List<Unit> units2 = unitGenerator.generate(player2, 3, 3);
-
-        List<Unit> units = new ArrayList<>();
-        units.addAll(units1);
-        units.addAll(units2);
-        for(Unit unit: units) {
-            unitGenerator.randomCoordinate(unit, grid, units);
-            Set<Coordinate> visible = navigationService.visible(unit.coordinate(), grid, unit.unitType().range());
-            visible.forEach(unit.player().seenCoordinates()::add);
-        }
+        List<Unit> units = unitGenerator.generateUnitsForPlayers(players, 3, 3, grid);
 
         gameSave = new GameSave(grid, units, players);
         gameSave.currentPlayer(player1);
@@ -105,7 +98,8 @@ public class MainGameState implements GameState {
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
 
-        spriteDrawer.draw(spriteBatch, playerViewFilterService.filterGameSave(gameSave));
+        spriteDrawer.draw(spriteBatch, gameSave);
+//        spriteDrawer.draw(spriteBatch, playerViewFilterService.filterGameSave(gameSave));
 
         spriteBatch.end();
     }

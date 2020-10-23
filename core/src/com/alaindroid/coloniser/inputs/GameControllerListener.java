@@ -2,6 +2,8 @@ package com.alaindroid.coloniser.inputs;
 
 import com.alaindroid.coloniser.draw.Point2D;
 import com.alaindroid.coloniser.grid.Coordinate;
+import com.alaindroid.coloniser.grid.HexCell;
+import com.alaindroid.coloniser.grid.TileType;
 import com.alaindroid.coloniser.service.DecisionService;
 import com.alaindroid.coloniser.service.NavigationService;
 import com.alaindroid.coloniser.state.GameSave;
@@ -13,10 +15,8 @@ import com.badlogic.gdx.math.Vector3;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -26,10 +26,14 @@ public class GameControllerListener implements GestureDetector.GestureListener {
     private final DecisionService decisionService;
     private final NavigationService navigationService;
 
+    private int tileCount = 0;
+    private float minX = 0;
+    private float minY = 0;
     private float maxX = 0;
     private float maxY = 0;
     private float xOffset = 0;
     private float yOffset = 0;
+    private Function<Float, Float> boundScale = f -> f;
 
     private float maxZoom = 4f;
     private float minZoom = 0.4f;
@@ -66,19 +70,28 @@ public class GameControllerListener implements GestureDetector.GestureListener {
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
+        setBounds(gameSave);
         xOffset = xOffset + deltaX;
         yOffset = yOffset + deltaY;
-        float absXOffset = Math.abs(xOffset);
-        float absYOffset = Math.abs(yOffset);
-        if (absXOffset > maxX) {
-            float deltaDelta = (absXOffset / xOffset) * (absXOffset - maxX);
+        if (xOffset > maxX) {
+            float deltaDelta = xOffset - maxX;
             deltaX = deltaX - deltaDelta;
             xOffset = xOffset - deltaDelta;
         }
-        if (absYOffset > maxY) {
-            float deltaDelta = (absYOffset / yOffset) * (absYOffset - maxY);
+        else if (xOffset < minX){
+            float deltaDelta = Math.abs(xOffset - minX);
+            deltaX = deltaX + deltaDelta;
+            xOffset = xOffset + deltaDelta;
+        }
+        if (yOffset > maxY) {
+            float deltaDelta = yOffset - maxY;
             deltaY = deltaY - deltaDelta;
             yOffset = yOffset - deltaDelta;
+        }
+        else if (yOffset < minY) {
+            float deltaDelta = Math.abs(yOffset - minY);
+            deltaY = deltaY + deltaDelta;
+            yOffset = yOffset + deltaDelta;
         }
 
         camera.translate(-deltaX, deltaY);
@@ -115,15 +128,20 @@ public class GameControllerListener implements GestureDetector.GestureListener {
     }
 
     private void setBounds(GameSave gameSave) {
-        List<Point2D> points = gameSave.grid().cells().keySet()
-                .stream()
-                .map(Coordinate::point)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-        Supplier thrower = () -> new RuntimeException("Failures!");
-        maxX = points.stream().map(Point2D::x).max(Float::compareTo).orElseThrow(thrower);
-        maxY = points.stream().map(Point2D::x).max(Float::compareTo).orElseThrow(thrower);
-
+        Set<Coordinate> coordinateSet = gameSave.grid().cells().keySet();
+        if(coordinateSet.size() != tileCount) {
+            List<Point2D> points = coordinateSet
+                    .stream()
+                    .map(Coordinate::point)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+            Supplier thrower = () -> new RuntimeException("Failures!");
+            minX = points.stream().map(Point2D::x).min(Float::compareTo).map(boundScale).orElseThrow(thrower);
+            minY = points.stream().map(Point2D::y).min(Float::compareTo).map(boundScale).orElseThrow(thrower);
+            maxX = points.stream().map(Point2D::x).max(Float::compareTo).map(boundScale).orElseThrow(thrower);
+            maxY = points.stream().map(Point2D::y).max(Float::compareTo).map(boundScale).orElseThrow(thrower);
+            tileCount = gameSave.grid().cells().keySet().size();
+        }
     }
 
     private boolean handleXY(float screenX, float screenY) {
@@ -133,6 +151,9 @@ public class GameControllerListener implements GestureDetector.GestureListener {
             return true;
         }
         Coordinate coordinate = coordinateOptional.get();
+        System.out.println("Clicked on hex: "
+                + Optional.ofNullable(gameSave.grid().cell(coordinate)).map(HexCell::tileType).orElse(null)
+                + " at " + coordinate);
         if (decisionService.isWaitingForSelection()) {
             Optional<Unit> unitOptional = findUnit(coordinate);
             if(!unitOptional.isPresent()) {
