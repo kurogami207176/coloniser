@@ -173,6 +173,7 @@ public class GameControllerListener implements GestureDetector.GestureListener {
     private Optional<Coordinate> findCoordinates(float screenX, float screenY) {
         Vector3 gameWorldVector = camera.unproject(new Vector3(screenX, screenY, 0));
         return gameSave.grid().cells().keySet().stream()
+                .parallel()
                 .map(c -> new Distance(c, gameWorldVector))
                 .sorted(Comparator.comparing(Distance::distance))
                 .findFirst()

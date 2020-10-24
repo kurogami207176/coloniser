@@ -86,18 +86,22 @@ public class BuildingGeneratorService {
         return randomCoordinates(grid, count, toUse, coordinatesSoFar, 1);
     }
 
-    private Set<Coordinate> randomCoordinates(Grid grid, int count, Set<Coordinate> coordinatesSoFar, float minimumDistance) {
+    private Set<Coordinate> randomCoordinates(Grid grid, int count, Set<Coordinate> coordinatesSoFar, int minimumDistance) {
         return randomCoordinates(grid, count, grid.cells().keySet(), coordinatesSoFar, minimumDistance);
     }
 
-    private Set<Coordinate> randomCoordinates(Grid grid, int count, Set<Coordinate> toUse, Set<Coordinate> coordinatesSoFar, float minimumDistance) {
+    private Set<Coordinate> randomCoordinates(Grid grid, int count, Set<Coordinate> toUse, Set<Coordinate> coordinatesSoFar, int minimumDistance) {
         Set<Coordinate> rands = new HashSet<>();
         while (rands.size() < count) {
             List<Coordinate> avail = toUse.stream()
                     .filter(c -> LandUnit.isLandType(grid.cell(c).tileType()) )
                     .filter(c -> coordinatesSoFar.stream()
-                            .allMatch(a -> CoordinateUtil.distance(c, a) > minimumDistance))
+                            .allMatch(a -> CoordinateUtil.distance(c, a) >= minimumDistance))
                     .collect(Collectors.toList());
+            if (avail.size() <= 0) {
+                rands.clear();
+                continue;
+            }
             Coordinate c = avail.get(RandomUtil.nextInt(avail.size()));
             rands.add(c);
             coordinatesSoFar.add(c);

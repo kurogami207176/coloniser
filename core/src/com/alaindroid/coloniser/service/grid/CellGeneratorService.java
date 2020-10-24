@@ -12,8 +12,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.alaindroid.coloniser.util.Constants.WATER_PECENTAGE;
-
 @RequiredArgsConstructor
 public class CellGeneratorService {
     private final LandTileWeightService landTileWeightService;
@@ -31,7 +29,7 @@ public class CellGeneratorService {
         return new HexCell(weightedType(coordinate, grid.minRGB(), grid.maxRGB(), neighborTiles));
     }
 
-    private TreeMap<Integer, TileType> createWeighted(TreeMap<Integer, TileType> fullWeightedMap,
+    private Map<TileType, Integer> createWeighted(TreeMap<Integer, TileType> fullWeightedMap,
                                                       Coordinate coordinate,
                                                       Coordinate minRGB,
                                                       Coordinate maxRGB,
@@ -53,7 +51,7 @@ public class CellGeneratorService {
                 .distanceFromClosestPole(distanceFromClosestPole)
                 .distanceFromEquator(distanceFromEquator);
         Map<TileType, Integer> baseWeights = Stream.of(TileType.DIRT, TileType.GOLD, TileType.GRASS, TileType.LAVA,
-                TileType.ROCK, TileType.SAND, TileType.SNOW, TileType.STONE)
+                TileType.ROCK, TileType.SAND, TileType.SNOW, TileType.STONE, TileType.WATER)
                 .collect(Collectors.toMap(
                         Function.identity(),
                         t -> landTileWeightService.getWeight(builderBundle.tileType(t).build()))
@@ -62,45 +60,18 @@ public class CellGeneratorService {
                 .filter(kv -> kv.getValue() > 0)
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         Map.Entry::getValue));
-        int totalWeight = 0;
-        for(TileType tileType: baseWeights.keySet()) {
-            totalWeight = addWeightedTile(fullWeightedMap, baseWeights.get(tileType), tileType, totalWeight);
-        }
-        return fullWeightedMap;
+        return baseWeights;
     }
 
     private TileType weightedType(Coordinate coordinate,
                                   Coordinate minRGB,
                                   Coordinate maxRGB,
                                   Map<TileType, Long> neighborTiles) {
-        TreeMap<Integer, TileType> fullWeightedMap = createWeighted( new TreeMap<>(),
+        Map<TileType, Integer> baseWeights = createWeighted( new TreeMap<>(),
                 coordinate,
                 minRGB,
                 maxRGB,
                 neighborTiles);
-
-        int totalWeight = addWaterTile(fullWeightedMap);
-        int randWeight = RandomUtil.nextInt(totalWeight);
-        TileType generated = fullWeightedMap.get(fullWeightedMap.ceilingKey(randWeight));
-        return generated;
-    }
-
-    private int addWeightedTile(TreeMap<Integer, TileType> weightedTileTreeMap, int weight, TileType type, int totalWeight) {
-        int nextWeight = totalWeight + weight;
-        weightedTileTreeMap.put(nextWeight, type);
-        return nextWeight;
-    }
-
-    private int addWaterTile(TreeMap<Integer, TileType> fullWeightedMap) {
-        int maxWeight = 0;
-        int totalIndividualWeight = 0;
-        for(int w: fullWeightedMap.keySet()) {
-            totalIndividualWeight += w - totalIndividualWeight;
-            maxWeight = w > maxWeight? w : maxWeight;
-        }
-        int waterWeight = (int) ((float) totalIndividualWeight * WATER_PECENTAGE);
-
-        int totalWeight = addWeightedTile(fullWeightedMap, waterWeight, TileType.WATER, maxWeight);
-        return totalWeight;
+        return RandomUtil.weightedRandom(baseWeights);
     }
 }

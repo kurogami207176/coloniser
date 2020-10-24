@@ -3,6 +3,7 @@ package com.alaindroid.coloniser.service;
 import com.alaindroid.coloniser.grid.Coordinate;
 import com.alaindroid.coloniser.grid.Grid;
 import com.alaindroid.coloniser.units.Unit;
+import com.alaindroid.coloniser.util.CoordinateUtil;
 import com.badlogic.gdx.math.Vector3;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +57,7 @@ public class PathFinderService {
         private final float distance;
         public CoordinateDistance(Coordinate n, Coordinate end) {
             this.coordinate = n;
-            this.distance = new Vector3(n.r(), n.g(), n.b()).dst(new Vector3(end.r(), end.g(), end.b()));
+            this.distance = CoordinateUtil.distance(n, end); //new Vector3(n.r(), n.g(), n.b()).dst(new Vector3(end.r(), end.g(), end.b()));
         }
     }
 

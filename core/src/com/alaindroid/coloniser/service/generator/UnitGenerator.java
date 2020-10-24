@@ -23,7 +23,8 @@ public class UnitGenerator {
 
     private final NavigationService navigationService;
 
-    public List<Unit> generateUnitsForPlayers(Collection<Player> players, Map<Player, Set<Coordinate>> settlementRange, int ship, int land, Grid grid) {
+    public List<Unit> generateUnitsForPlayers(Collection<Player> players, Map<Player, Set<Coordinate>> settlementRange,
+                                              int ship, int land, Grid grid) {
         List<Unit> units = players.stream()
                 .map(player -> generate(player, ship, land))
                 .flatMap(List::stream)

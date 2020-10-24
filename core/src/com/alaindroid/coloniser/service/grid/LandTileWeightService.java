@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static com.alaindroid.coloniser.util.Constants.WATER_PECENTAGE;
+
 public class LandTileWeightService {
 
     public static final float SNOW_ZONE = 0.07f;
@@ -38,6 +40,8 @@ public class LandTileWeightService {
                 return nonSnowLandWeight(bundle);
             case SNOW:
                 return snowWeight(bundle);
+            case WATER:
+                return waterWeight(bundle);
         }
         return 0;
     }
@@ -45,6 +49,10 @@ public class LandTileWeightService {
     private int snowWeight(TileWeightBundle b)  {
         float snowProbability = getSnowProbability(b);
         return (int) (TOTAL_LAND_WEIGHT * snowProbability);
+    }
+
+    private int waterWeight(TileWeightBundle b) {
+        return (int)((float)TOTAL_LAND_WEIGHT * WATER_PECENTAGE) ;
     }
 
     private int nonSnowLandWeight(TileWeightBundle b) {
